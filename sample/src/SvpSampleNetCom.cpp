@@ -347,7 +347,7 @@ HI_S32 SvpSampleLSTMDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
 
 
 /*********************************/
-
+//一阶段检测卷积网络初始化
 HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_DET_S *pstComfParam, const HI_U8 netType)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -495,6 +495,7 @@ Fail1:
     return s32Ret;
 }
 
+//一阶段检测卷积网络内存注销，参数：一阶段检测参数结构
 void SvpSampleOneSegDetCnnDeinit(SVP_NNIE_ONE_SEG_DET_S *pstComParam)
 {
     HI_U32 i, j;
@@ -526,7 +527,7 @@ void SvpSampleOneSegDetCnnDeinit(SVP_NNIE_ONE_SEG_DET_S *pstComParam)
     memset(pstComParam, 0, sizeof(SVP_NNIE_ONE_SEG_DET_S));
 }
 
-//多段卷积网络的初始化，参数配置文件，参数结构体，src和dst的align数值
+//多阶段卷积网络的初始化，参数配置文件，参数结构体，src和dst的align数值
 HI_S32 SvpSampleMultiSegCnnInit(SVP_NNIE_CFG_S *pstComCfg, SVP_NNIE_MULTI_SEG_S *pstComfParam,
     HI_U32 *pu32SrcAlign, HI_U32 *pu32DstAlign)
 {
@@ -569,15 +570,16 @@ HI_S32 SvpSampleMultiSegCnnInit(SVP_NNIE_CFG_S *pstComCfg, SVP_NNIE_MULTI_SEG_S 
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail2, "Error(%#x): Malloc tmp buf failed!", s32Ret);
 
     /******************** step3, get task_buf size *******************************/
+    //计算任务存储
     CHECK_EXP_GOTO(pstComfParam->stModel.u32NetSegNum < 2, Fail3, "netSegNum should be larger than 1");///delete it???
 
-    //申请任务存储
     s32Ret = HI_MPI_SVP_NNIE_GetTskBufSize(pstComCfg->u32MaxInputNum, pstComCfg->u32MaxBboxNum,
         &pstComfParam->stModel, pstComfParam->au32TaskBufSize, pstComfParam->stModel.u32NetSegNum);
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail3, "Error(%#x): GetTaskSize failed!", s32Ret);
 
     /******************** step4, malloc tsk_buf size *******************************/
     //NNIE and CPU running at interval. get max task_buf size
+    //nnie框架和cpu交替运行，申请最大的任务内存
     u32MaxTaskSize = pstComfParam->au32TaskBufSize[0];
     for (i = 1; i<pstComfParam->stModel.u32NetSegNum; i++)
     {
@@ -743,7 +745,7 @@ Fail1:
 }
 
 
-//多段卷积网络申请的内存注销
+//多阶段卷积网络申请的内存注销
 void SvpSampleMultiSegCnnDeinit(SVP_NNIE_MULTI_SEG_S *pstComParam)
 {
     HI_U32 i, j;
