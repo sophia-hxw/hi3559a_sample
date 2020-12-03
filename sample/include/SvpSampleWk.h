@@ -119,7 +119,7 @@ typedef struct hiSVP_NNIE_ONE_SEG_S
     HI_U32 au32ClfNum[SVP_NNIE_MAX_OUTPUT_NUM];
 }SVP_NNIE_ONE_SEG_S;
 
-//一阶段检测参数结构
+//一阶段检测参数
 typedef struct hiSVP_NNIE_ONE_SEG_DET_S
 {
     HI_U32 u32TotalImgNum;//图片总数
@@ -127,13 +127,13 @@ typedef struct hiSVP_NNIE_ONE_SEG_DET_S
     FILE *fpLabel[SVP_NNIE_MAX_OUTPUT_NUM];
 
     HI_U32 u32ModelBufSize;//模型buffer
-    HI_U32 u32TmpBufSize;//缓存buffer
+    HI_U32 u32TmpBufSize;//缓存buffer，=下面SVP_NNIE_MODEL_S结构体中缓存buf大小得到
 
     SVP_NNIE_MODEL_S    stModel;//模型结构体
-    SVP_MEM_INFO_S      stModelBuf;//模型内存信息结构体
-    SVP_MEM_INFO_S      stTmpBuf;//缓存内存信息结构体
+    SVP_MEM_INFO_S      stModelBuf;//模型buf
+    SVP_MEM_INFO_S      stTmpBuf;//缓存buf
 
-    SVP_MEM_INFO_S      stTskBuf;//任务内存信息结构体
+    SVP_MEM_INFO_S      stTskBuf;//任务buf
     HI_U32 u32TaskBufSize;//任务内存大小
 
     SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];
@@ -171,18 +171,18 @@ typedef struct hiSVP_NNIE_MULTI_SEG_S
     SVP_NNIE_FORWARD_WITHBBOX_CTRL_S astBboxCtrl[SVP_NNIE_MAX_NET_SEG_NUM];
 }SVP_NNIE_MULTI_SEG_S;
 
-//nnie框架配置参数，模型名字，输入List，输出标签，最大输入，最大Bbox数，topN，标签数
+//配置文件式的参数
 typedef struct hiSVP_NNIE_CFG_S
 {
-    const HI_CHAR *pszModelName;
-    const HI_CHAR *paszPicList[SVP_NNIE_MAX_INPUT_NUM];
-    const HI_CHAR *paszLabel[SVP_NNIE_MAX_OUTPUT_NUM];
+    const HI_CHAR *pszModelName;//模型名字
+    const HI_CHAR *paszPicList[SVP_NNIE_MAX_INPUT_NUM];//输入List
+    const HI_CHAR *paszLabel[SVP_NNIE_MAX_OUTPUT_NUM];//输出标签
 
-    HI_U32 u32MaxInputNum;
-    HI_U32 u32MaxBboxNum;
+    HI_U32 u32MaxInputNum;//最大输入
+    HI_U32 u32MaxBboxNum;//最大Bbox数
 
-    HI_U32 u32TopN;
-    HI_BOOL bNeedLabel;
+    HI_U32 u32TopN;//topN
+    HI_BOOL bNeedLabel;//标签数
 }SVP_NNIE_CFG_S;
 
 //节点信息，层名称，所属段id，层id，输出id

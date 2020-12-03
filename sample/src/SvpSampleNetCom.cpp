@@ -346,8 +346,8 @@ HI_S32 SvpSampleLSTMDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
 }
 
 
-/*********************************/
-//一阶段检测卷积网络初始化
+
+//一阶段检测卷积网络初始化，参数：配置文件，一阶段检测参数，网络类型
 HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_DET_S *pstComfParam, const HI_U8 netType)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -368,31 +368,37 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_DET
     SVP_MEM_INFO_S *pstTskBuf = &pstComfParam->stTskBuf;
 
     /******************** step1, load wk file, *******************************/
+    //读取模型文件，参数：模型名字，模型buffer
     s32Ret = SvpSampleReadWK(pstClfCfg->pszModelName, pstModelBuf);
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "Error(%#x): read model file(%s) failed", s32Ret, pstClfCfg->pszModelName);
 
+    //载入模型，参数：模型buffer，
     s32Ret = HI_MPI_SVP_NNIE_LoadModel(pstModelBuf, &(pstComfParam->stModel));
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail1, "Error(%#x): LoadModel from %s failed!", s32Ret, pstClfCfg->pszModelName);
 
+    //缓存buf大小有两个参数定义地方，1，一阶段检测参数；2，模型结构体中也有缓存buf大小
     pstComfParam->u32TmpBufSize = pstComfParam->stModel.u32TmpBufSize;
 
     /******************** step2, malloc tmp_buf *******************************/
+    //申请TmpBuf存储
     s32Ret = SvpSampleMallocMem(NULL, NULL, pstComfParam->u32TmpBufSize, pstTmpBuf);
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail2, "Error(%#x): Malloc tmp buf failed!", s32Ret);
 
     /******************** step3, get tsk_buf size *******************************/
+    //计算任务Buf存储大小
     CHECK_EXP_GOTO(pstComfParam->stModel.u32NetSegNum != 1, Fail3, "netSegNum should be 1");
     s32Ret = HI_MPI_SVP_NNIE_GetTskBufSize(pstClfCfg->u32MaxInputNum, pstClfCfg->u32MaxBboxNum,
         &pstComfParam->stModel, &pstComfParam->u32TaskBufSize, pstComfParam->stModel.u32NetSegNum);
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail3, "Error(%#x): GetTaskSize failed!", s32Ret);
 
     /******************** step4, malloc tsk_buf size *******************************/
+    //申请任务存储
     s32Ret = SvpSampleMallocMem(NULL, NULL, pstComfParam->u32TaskBufSize, pstTskBuf);
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail3, "Error(%#x): Malloc task buf failed!", s32Ret);
 
     /*********** step5, check and open all input images list file ******************/
-    // all input pic_list file should have the same num of input image
-    u32Num = 0;
+    //检查并读入所有的输入图片文件
+    u32Num = 0;     //所有输入的pic_list文件应该有相同数目的输入图片
     CHECK_EXP_GOTO(!pstClfCfg->paszPicList[0], Fail4, "Error(%#x): input pic_list[0] is null", HI_ERR_SVP_NNIE_ILLEGAL_PARAM);
     pstComfParam->fpSrc[0] = SvpSampleOpenFile(pstClfCfg->paszPicList[0], "r");
     CHECK_EXP_GOTO(!(pstComfParam->fpSrc[0]), Fail4, "Error(%#x), Open file(%s) failed!",
@@ -403,7 +409,7 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_DET
     }
     pstComfParam->u32TotalImgNum = u32Num;
 
-    u16SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;
+    u16SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;//从模型在 NNIE 引擎上执行的段信息中获取输入节点个数
     for (i = 1; i < u16SrcNum; i++)
     {
         u32Num = 0;
@@ -495,6 +501,7 @@ Fail1:
     return s32Ret;
 }
 
+
 //一阶段检测卷积网络内存注销，参数：一阶段检测参数结构
 void SvpSampleOneSegDetCnnDeinit(SVP_NNIE_ONE_SEG_DET_S *pstComParam)
 {
@@ -505,29 +512,30 @@ void SvpSampleOneSegDetCnnDeinit(SVP_NNIE_ONE_SEG_DET_S *pstComParam)
         return;
     }
 
-    for (i = 0; i < pstComParam->stModel.u32NetSegNum; ++i)
+    for (i = 0; i < pstComParam->stModel.u32NetSegNum; ++i)//网络的段数量
     {
-        for (j = 0; j < pstComParam->stModel.astSeg[i].u16DstNum; ++j)
+        for (j = 0; j < pstComParam->stModel.astSeg[i].u16DstNum; ++j)//输出
         {
             SvpSampleFreeBlob(&pstComParam->astDst[j]);
         }
 
-        for (j = 0; j < pstComParam->stModel.astSeg[i].u16SrcNum; ++j)
+        for (j = 0; j < pstComParam->stModel.astSeg[i].u16SrcNum; ++j)//输入
         {
             SvpSampleFreeBlob(&pstComParam->astSrc[j]);
             SvpSampleCloseFile(pstComParam->fpSrc[j]);
         }
     }
 
-    SvpSampleMemFree(&pstComParam->stTskBuf);
-    SvpSampleMemFree(&pstComParam->stTmpBuf);
-    HI_MPI_SVP_NNIE_UnloadModel(&(pstComParam->stModel));
-    SvpSampleMemFree(&pstComParam->stModelBuf);
+    SvpSampleMemFree(&pstComParam->stTskBuf);//释放任务存储
+    SvpSampleMemFree(&pstComParam->stTmpBuf);//释放缓存
+    HI_MPI_SVP_NNIE_UnloadModel(&(pstComParam->stModel));//卸载模型
+    SvpSampleMemFree(&pstComParam->stModelBuf);//释放模型存储
 
-    memset(pstComParam, 0, sizeof(SVP_NNIE_ONE_SEG_DET_S));
+    memset(pstComParam, 0, sizeof(SVP_NNIE_ONE_SEG_DET_S));//内存还原
 }
 
-//多阶段卷积网络的初始化，参数配置文件，参数结构体，src和dst的align数值
+
+//多阶段卷积网络的初始化，参数：配置文件，参数结构体，src和dst的align数值
 HI_S32 SvpSampleMultiSegCnnInit(SVP_NNIE_CFG_S *pstComCfg, SVP_NNIE_MULTI_SEG_S *pstComfParam,
     HI_U32 *pu32SrcAlign, HI_U32 *pu32DstAlign)
 {
@@ -745,7 +753,7 @@ Fail1:
 }
 
 
-//多阶段卷积网络申请的内存注销
+//多阶段卷积网络申请的内存注销，参数：多阶段参数结构体
 void SvpSampleMultiSegCnnDeinit(SVP_NNIE_MULTI_SEG_S *pstComParam)
 {
     HI_U32 i, j;

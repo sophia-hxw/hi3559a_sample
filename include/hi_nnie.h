@@ -193,17 +193,15 @@ typedef struct hiSVP_NNIE_SEG_S
     //网络段的第 i 个 RoiPooling 或者 PsRoiPooling 在SVP_NNIE_MODEL_S 中 SVP_NNIE_ROIPOOL_INFO_S 数组的下标，SVP_NNIE_MAX_ROI_LAYER_NUM_OF_SEG为2
 }SVP_NNIE_SEG_S;
 
-/*NNIE model*/
+//模型信息
 typedef struct hiSVP_NNIE_MODEL_S
 {
     SVP_NNIE_RUN_MODE_E     enRunMode;//枚举类型，网络模型运行模式
 
-    HI_U32                  u32TmpBufSize; /*temp buffer size*/
-    //辅助内存大小
+    HI_U32                  u32TmpBufSize; //缓存buf大小
     HI_U32                  u32NetSegNum;//网络模型中 NNIE 执行的网络分段数,取值[1,8]
-    SVP_NNIE_SEG_S          astSeg[SVP_NNIE_MAX_NET_SEG_NUM];
-    //网络在 NNIE 引擎上执行的段信息
-    SVP_NNIE_ROIPOOL_INFO_S astRoiInfo[SVP_NNIE_MAX_ROI_LAYER_NUM]; /*ROIPooling info*/
+    SVP_NNIE_SEG_S          astSeg[SVP_NNIE_MAX_NET_SEG_NUM];//网络在 NNIE 引擎上执行的段信息
+    SVP_NNIE_ROIPOOL_INFO_S astRoiInfo[SVP_NNIE_MAX_ROI_LAYER_NUM]; 
     //网络模型中 RoiPooling 以及 PsRoiPooling 的信息数组ROIPooling info
 
     SVP_MEM_INFO_S          stBase;//网络其他信息
