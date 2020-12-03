@@ -7,6 +7,7 @@
 
 using namespace std;
 
+//读模型文件到ModelBuf
 HI_S32 SvpSampleReadWK(const HI_CHAR *pszModelName, SVP_MEM_INFO_S *pstModelBuf)
 {
     HI_S32 s32Ret = HI_FAILURE;
@@ -40,6 +41,7 @@ Fail:
     return s32Ret;
 }
 
+//
 static HI_S32 SvpSampleOneSegCommonInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_S *pstComfParam, SVP_SAMPLE_LSTMRunTimeCtx *pstLSTMCtx)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -280,16 +282,6 @@ Fail1:
     return s32Ret;
 }
 
-HI_S32 SvpSampleOneSegCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_S *pstComParam)
-{
-    return SvpSampleOneSegCommonInit(pstClfCfg, pstComParam, NULL);
-}
-
-HI_S32 SvpSampleLSTMInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_S *pstComParam, SVP_SAMPLE_LSTMRunTimeCtx *pstLSTMCtx)
-{
-    return SvpSampleOneSegCommonInit(pstClfCfg, pstComParam, pstLSTMCtx);
-}
-
 static void SvpSampleOneSegCommDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
 {
     HI_U32 i, j;
@@ -334,10 +326,21 @@ static void SvpSampleOneSegCommDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
     memset(pstComParam, 0, sizeof(SVP_NNIE_ONE_SEG_S));
 }
 
+HI_S32 SvpSampleOneSegCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_S *pstComParam)
+{
+    return SvpSampleOneSegCommonInit(pstClfCfg, pstComParam, NULL);
+}
+
 void SvpSampleOneSegCnnDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
 {
     SvpSampleOneSegCommDeinit(pstComParam);
 }
+
+HI_S32 SvpSampleLSTMInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_S *pstComParam, SVP_SAMPLE_LSTMRunTimeCtx *pstLSTMCtx)
+{
+    return SvpSampleOneSegCommonInit(pstClfCfg, pstComParam, pstLSTMCtx);
+}
+
 
 HI_S32 SvpSampleLSTMDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
 {
@@ -407,7 +410,7 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_DET
     {
         u32Num++;
     }
-    pstComfParam->u32TotalImgNum = u32Num;
+    pstComfParam->u32TotalImgNum = u32Num;//图片总数
 
     u16SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;//从模型在 NNIE 引擎上执行的段信息中获取输入节点个数
     for (i = 1; i < u16SrcNum; i++)
@@ -428,6 +431,7 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_DET
     }
 
     /*********** step6, malloc memory of src blob, dst blob and post-process mem ***********/
+    //申请输入，输出和后处理存储
     u32Num = SVP_SAMPLE_MIN(pstComfParam->u32TotalImgNum, pstClfCfg->u32MaxInputNum);
     // malloc src, dst blob buf
     for (u32SegCnt = 0; u32SegCnt < pstComfParam->stModel.u32NetSegNum; ++u32SegCnt)
@@ -464,13 +468,14 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_DET
         }
     }
 
-    /************************** step8, set ctrl param **************************/
-    pstComfParam->stCtrl.enNnieId = SVP_NNIE_ID_0;
-    pstComfParam->stCtrl.u32NetSegId = 0;
-    pstComfParam->stCtrl.u32SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;
-    pstComfParam->stCtrl.u32DstNum = pstComfParam->stModel.astSeg[0].u16DstNum;
-    memcpy(&pstComfParam->stCtrl.stTmpBuf, &pstComfParam->stTmpBuf, sizeof(SVP_MEM_INFO_S));
-    memcpy(&pstComfParam->stCtrl.stTskBuf, &pstComfParam->stTskBuf, sizeof(SVP_MEM_INFO_S));
+    /************************** step7, set ctrl param **************************/
+    //一些全局的前传参数
+    pstComfParam->stCtrl.enNnieId = SVP_NNIE_ID_0;  //设备id
+    pstComfParam->stCtrl.u32NetSegId = 0;           //分段编号
+    pstComfParam->stCtrl.u32SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;//输入节点
+    pstComfParam->stCtrl.u32DstNum = pstComfParam->stModel.astSeg[0].u16DstNum;//输出节点
+    memcpy(&pstComfParam->stCtrl.stTmpBuf, &pstComfParam->stTmpBuf, sizeof(SVP_MEM_INFO_S));//缓存buf
+    memcpy(&pstComfParam->stCtrl.stTskBuf, &pstComfParam->stTskBuf, sizeof(SVP_MEM_INFO_S));//任务buf
 
 
     return s32Ret;

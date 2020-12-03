@@ -120,7 +120,7 @@ typedef enum hiSVP_NNIE_NET_TYPE_E
     SVP_NNIE_NET_TYPE_BUTT
 }SVP_NNIE_NET_TYPE_E;
 
-/*Node information*/
+//每个节点信息
 typedef struct hiSVP_NNIE_NODE_S
 {
     SVP_BLOB_TYPE_E  enType;//类型
@@ -128,9 +128,9 @@ typedef struct hiSVP_NNIE_NODE_S
     {
         struct
         {
-            HI_U32 u32Width;
-            HI_U32 u32Height;
-            HI_U32 u32Chn;
+            HI_U32 u32Width;//w
+            HI_U32 u32Height;//h
+            HI_U32 u32Chn;//c
         }stWhc;
         HI_U32 u32Dim;          /*D: vector dimension*/
     }unShape;
@@ -176,6 +176,7 @@ typedef struct hiSVP_NNIE_ROIPOOL_INFO_S
     HI_CHAR szName[SVP_NNIE_NODE_NAME_LEN];
 }SVP_NNIE_ROIPOOL_INFO_S;
 
+//每个分段的信息
 typedef struct hiSVP_NNIE_SEG_S
 {
     SVP_NNIE_NET_TYPE_E enNetType;//类型
@@ -207,14 +208,15 @@ typedef struct hiSVP_NNIE_MODEL_S
     SVP_MEM_INFO_S          stBase;//网络其他信息
 }SVP_NNIE_MODEL_S;
 
+//网络前传信息
 typedef struct hiSVP_NNIE_FORWARD_CTRL_S
 {
-    HI_U32              u32SrcNum;      /* input node num, [1, 16] */
-    HI_U32              u32DstNum;      /* output node num, [1, 16]*/
-    HI_U32              u32NetSegId;    /* net segment index running on NNIE */
-    SVP_NNIE_ID_E       enNnieId;       /* device target which running the seg*/
-    SVP_MEM_INFO_S      stTmpBuf;       /* auxiliary temp mem */
-    SVP_MEM_INFO_S      stTskBuf;       /* auxiliary task mem */
+    HI_U32              u32SrcNum;      //输入节点数量, [1, 16]
+    HI_U32              u32DstNum;      //输出节点数量, [1, 16]
+    HI_U32              u32NetSegId;    //nnie上的段编号
+    SVP_NNIE_ID_E       enNnieId;       //运行网络该段的设备id
+    SVP_MEM_INFO_S      stTmpBuf;       //缓存buf信息
+    SVP_MEM_INFO_S      stTskBuf;       //任务buf信息
 }SVP_NNIE_FORWARD_CTRL_S;
 
 typedef struct hiSVP_NNIE_FORWARD_WITHBBOX_CTRL_S
