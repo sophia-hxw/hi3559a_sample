@@ -119,22 +119,22 @@ typedef struct hiSVP_NNIE_ONE_SEG_S
     HI_U32 au32ClfNum[SVP_NNIE_MAX_OUTPUT_NUM];
 }SVP_NNIE_ONE_SEG_S;
 
-//一阶段检测？如ssd，yolo等
+//一阶段检测参数结构
 typedef struct hiSVP_NNIE_ONE_SEG_DET_S
 {
-    HI_U32 u32TotalImgNum;
+    HI_U32 u32TotalImgNum;//图片总数
     FILE *fpSrc[SVP_NNIE_MAX_INPUT_NUM];
     FILE *fpLabel[SVP_NNIE_MAX_OUTPUT_NUM];
 
-    HI_U32 u32ModelBufSize;
-    HI_U32 u32TmpBufSize;
+    HI_U32 u32ModelBufSize;//模型buffer
+    HI_U32 u32TmpBufSize;//缓存buffer
 
-    SVP_NNIE_MODEL_S    stModel;
-    SVP_MEM_INFO_S      stModelBuf;
-    SVP_MEM_INFO_S      stTmpBuf;
+    SVP_NNIE_MODEL_S    stModel;//模型结构体
+    SVP_MEM_INFO_S      stModelBuf;//模型内存信息结构体
+    SVP_MEM_INFO_S      stTmpBuf;//缓存内存信息结构体
 
-    SVP_MEM_INFO_S      stTskBuf;
-    HI_U32 u32TaskBufSize;
+    SVP_MEM_INFO_S      stTskBuf;//任务内存信息结构体
+    HI_U32 u32TaskBufSize;//任务内存大小
 
     SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];
     SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];
