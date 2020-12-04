@@ -2,6 +2,8 @@
 *** 注释标签说明：
 *** QUES: 没看懂的问题，待解释？
 *** TODO: 懂抽象层面含义，需要补充细节
+***
+*** 一阶段检测的相关函数
 */
 #include "SvpSampleWk.h"
 #include "SvpSampleCom.h"
@@ -57,7 +59,7 @@ HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNI
     s32Ret = HI_MPI_SVP_NNIE_Forward(&SvpNnieHandle, pstDetParam->astSrc, &pstDetParam->stModel,
         pstDetParam->astDst, &pstDetParam->stCtrl, bInstant);
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "Error(%#x): CNN_Forward failed!", s32Ret);
-    
+
     s32Ret = HI_MPI_SVP_NNIE_Query(enNnieId, SvpNnieHandle, &bFinish, bBlock);
     while (HI_ERR_SVP_NNIE_QUERY_TIMEOUT == s32Ret)
     {
@@ -69,18 +71,20 @@ HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNI
     return s32Ret;
 }
 
+//获取一阶段检测结果，参数： 一阶段检测参数，网络类型，ssd网络专用参数？，结果文件夹，“文件名+后缀”数组
 HI_S32 SvpSampleDetOneSegGetResult(SVP_NNIE_ONE_SEG_DET_S *pstDetParam,
     HI_U8 netType, HI_VOID *pExtraParam,
     string& strResultFolderDir, vector<SVP_SAMPLE_FILE_NAME_PAIR>& imgNameRecoder)
 {
     HI_S32 s32Ret = HI_SUCCESS;
-    SVP_SAMPLE_BOX_S astBoxesResult[1024];
+    SVP_SAMPLE_BOX_S astBoxesResult[1024];//结果存储数组
 
     HI_U32* p32BoxNum = (HI_U32*)malloc(pstDetParam->astSrc->u32Num * sizeof(HI_U32));
+    //同caffe的[N,C,H,W]中的N个bbox内存
     CHECK_EXP_RET(p32BoxNum == NULL, HI_FAILURE, "malloc p32BoxNum failure!");
-
-    SVP_SAMPLE_BOX_RESULT_INFO_S stBoxesInfo = {0};
-    stBoxesInfo.pstBbox = astBoxesResult;
+    
+    SVP_SAMPLE_BOX_RESULT_INFO_S stBoxesInfo = {0};//bbox信息结果，宽高，以及bbox块参数
+    stBoxesInfo.pstBbox = astBoxesResult;//pstBbox指针指向数组astBoxesResult
     stBoxesInfo.u32OriImHeight = pstDetParam->astSrc[0].unShape.stWhc.u32Height;
     stBoxesInfo.u32OriImWidth = pstDetParam->astSrc[0].unShape.stWhc.u32Width;
 
@@ -143,8 +147,10 @@ HI_S32 SvpSampleDetOneSegGetResult(SVP_NNIE_ONE_SEG_DET_S *pstDetParam,
     return s32Ret;
 }
 
+//以标示变量或者函数的定义在别的文件中，提示编译器遇到此变量和函数时在其他模块中寻找其定义；此外extern也可用来进行链接指定
 extern void getSSDParm(SVP_NNIE_SSD_S *param, const SVP_NNIE_ONE_SEG_DET_S *pstDetecionParam);
 
+//ssd的额外参数
 void getSSDResultPara(Result_SSD_Para_S *stParam)
 {
     stParam->u32KeepTopK = 200;
@@ -160,9 +166,13 @@ HI_U32 SvpSampleGetResultMemSize(const HI_U8 netType, SVP_NNIE_SSD_S *pstSSDPara
     case SVP_SAMPLE_WK_DETECT_NET_YOLOV2:
     {
         HI_U32 inputdate_size = SVP_SAMPLE_YOLOV2_GRIDNUM*SVP_SAMPLE_YOLOV2_GRIDNUM*SVP_SAMPLE_YOLOV2_CHANNLENUM * sizeof(HI_FLOAT);
+        //13*13*50个float
         HI_U32 u32TmpBoxSize = SVP_SAMPLE_YOLOV2_GRIDNUM*SVP_SAMPLE_YOLOV2_GRIDNUM*SVP_SAMPLE_YOLOV2_CHANNLENUM * sizeof(HI_U32);
+        //13*13*50个uint32
         HI_U32 u32BoxSize = SVP_SAMPLE_YOLOV2_BOXTOTLENUM * sizeof(SVP_SAMPLE_BOX_S);
+        //13*13*5个bbox存储信息框
         HI_U32 u32StackSize = SVP_SAMPLE_YOLOV2_BOXTOTLENUM * sizeof(SVP_SAMPLE_STACK_S);
+        //13*13*5个二维坐标点
         HI_U32 u32ResultBoxSize = SVP_SAMPLE_YOLOV2_MAX_BOX_NUM * sizeof(SVP_SAMPLE_BOX_S);
         u32ResultMemSize = inputdate_size + u32TmpBoxSize + u32BoxSize + u32StackSize + u32ResultBoxSize;
         break;
@@ -195,6 +205,7 @@ HI_U32 SvpSampleGetResultMemSize(const HI_U8 netType, SVP_NNIE_SSD_S *pstSSDPara
     return u32ResultMemSize;
 }
 
+//一阶段检测网络执行的最上层抽象函数，yolov1，yolov2和ssd都是从此处进
 HI_S32 SvpSampleCnnDetectionOneSeg (const HI_CHAR *pszModelName, const HI_CHAR *paszPlicList[], const HI_U8 netType, HI_S32 s32Cnt)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -294,6 +305,7 @@ Fail:
     return s32Ret;
 }
 
+//ssd例子，调用一阶段检测网络
 void SvpSampleCnnDetSSD()
 {
     printf("%s start ...\n", __FUNCTION__);
@@ -302,9 +314,10 @@ void SvpSampleCnnDetSSD()
         g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_SSD],
         SVP_SAMPLE_WK_DETECT_NET_SSD);
     printf("%s end ...\n\n", __FUNCTION__);
-    fflush(stdout);
+    fflush(stdout);//TODO: 理解fflush的含义和用法
 }
 
+//yolov1例子，调用一阶段检测网络
 void SvpSampleCnnDetYoloV1()
 {
     printf("%s start ...\n", __FUNCTION__);
@@ -313,9 +326,10 @@ void SvpSampleCnnDetYoloV1()
         g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV1],
         SVP_SAMPLE_WK_DETECT_NET_YOLOV1);
     printf("%s end ...\n\n", __FUNCTION__);
-    fflush(stdout);
+    fflush(stdout);//TODO: 理解fflush的含义和用法
 }
 
+//yolov2例子，调用一阶段检测网络
 void SvpSampleCnnDetYoloV2()
 {
     printf("%s start ...\n", __FUNCTION__);
@@ -324,5 +338,5 @@ void SvpSampleCnnDetYoloV2()
         g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV2],
         SVP_SAMPLE_WK_DETECT_NET_YOLOV2);
     printf("%s end ...\n\n", __FUNCTION__);
-    fflush(stdout);
+    fflush(stdout);//TODO: 理解fflush的含义和用法
 }

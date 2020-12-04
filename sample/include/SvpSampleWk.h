@@ -23,7 +23,7 @@
 
 using namespace std;
 
-//bbox四个参数，score，还有俩啥参数？
+//bbox存储信息框，有bbox四个参数，score，还有俩啥参数？
 typedef struct hiSVP_SAMPLE_BOX_S
 {
     HI_FLOAT f32Xmin;
@@ -136,8 +136,8 @@ typedef struct hiSVP_NNIE_ONE_SEG_DET_S
     SVP_MEM_INFO_S      stTskBuf;//任务buf
     HI_U32 u32TaskBufSize;//任务内存大小
 
-    SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];
-    SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];
+    SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];//16
+    SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];//16
 
     SVP_NNIE_FORWARD_CTRL_S stCtrl;
 
@@ -321,7 +321,7 @@ HI_S32 SvpSampleAnchorInfoInit(SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E netTy
 #define SVP_SAMPLE_YOLOV2_BOXNUM         (5)
 //类别数量
 #define SVP_SAMPLE_YOLOV2_CLASSNUM       (5)
-//box总数，13*13*5
+//yolov2的box总数，13*13*5
 #define SVP_SAMPLE_YOLOV2_BOXTOTLENUM    (SVP_SAMPLE_YOLOV2_GRIDNUM * SVP_SAMPLE_YOLOV2_GRIDNUM * SVP_SAMPLE_YOLOV2_BOXNUM)
 //最大box数量
 #define SVP_SAMPLE_YOLOV2_MAX_BOX_NUM    (10)

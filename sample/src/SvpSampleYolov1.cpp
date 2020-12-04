@@ -160,7 +160,7 @@ void ConvertPosition(position bbox, SVP_SAMPLE_BOX_S *result)
     result->f32Ymax = yMax;
 }
 
-//yolov1的检测，参数：二维得分数组，模型结果[x,y,w,h]位置指针
+//yolov1的检测结果，参数：二维得分数组，模型结果[x,y,w,h]位置指针
 //后续分析结构bbox[x1,x2,y1,y2]指针，返回检测的个数
 HI_U32 YoloV1Detect(HI_FLOAT af32Score[][YOLOV1_BBOX_CNT], position *bbox, SVP_SAMPLE_BOX_S *pstBoxesResult)
 {

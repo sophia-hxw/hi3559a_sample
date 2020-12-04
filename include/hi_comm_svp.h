@@ -44,7 +44,7 @@ typedef struct hiSVP_BLOB_S
      HI_U64 u64VirAddr;          //虚拟内存地址
      HI_U64 u64PhyAddr;          //物理内存地址
 
-    HI_U32      u32Num;         /*N: frame num or sequence num,correspond to caffe blob's n*/
+    HI_U32      u32Num;         //caffe中的N，对应帧数或者sequence数量
     union
     {
         struct
