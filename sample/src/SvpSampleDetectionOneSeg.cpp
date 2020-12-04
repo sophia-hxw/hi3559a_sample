@@ -71,7 +71,8 @@ HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNI
     return s32Ret;
 }
 
-//获取一阶段检测结果，参数： 一阶段检测参数，网络类型，ssd网络专用参数？，结果文件夹，“文件名+后缀”数组
+//获取一阶段检测结果，参数： 一阶段检测参数，网络类型，
+//ssd网络专用参数？，结果文件夹，“文件名+后缀”数组
 HI_S32 SvpSampleDetOneSegGetResult(SVP_NNIE_ONE_SEG_DET_S *pstDetParam,
     HI_U8 netType, HI_VOID *pExtraParam,
     string& strResultFolderDir, vector<SVP_SAMPLE_FILE_NAME_PAIR>& imgNameRecoder)
@@ -206,7 +207,7 @@ HI_U32 SvpSampleGetResultMemSize(const HI_U8 netType, SVP_NNIE_SSD_S *pstSSDPara
 }
 
 //一阶段检测网络执行的最上层抽象函数，yolov1，yolov2和ssd都是从此处进
-HI_S32 SvpSampleCnnDetectionOneSeg (const HI_CHAR *pszModelName, const HI_CHAR *paszPlicList[], const HI_U8 netType, HI_S32 s32Cnt)
+HI_S32 SvpSampleCnnDetectionOneSeg(const HI_CHAR *pszModelName, const HI_CHAR *paszPlicList[], const HI_U8 netType, HI_S32 s32Cnt)
 {
     HI_S32 s32Ret = HI_SUCCESS;
     HI_U32 u32MaxInputNum = 10;
