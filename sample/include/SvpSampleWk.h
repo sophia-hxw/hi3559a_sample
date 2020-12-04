@@ -30,8 +30,8 @@ typedef struct hiSVP_SAMPLE_BOX_S
     HI_FLOAT f32Xmax;
     HI_FLOAT f32Ymin;
     HI_FLOAT f32Ymax;
-    HI_FLOAT f32ClsScore;
-    HI_U32 u32MaxScoreIndex;//这是什么？
+    HI_FLOAT f32ClsScore;//分类得分值
+    HI_U32 u32MaxScoreIndex;//得分score最大的类别class索引
     HI_U32 u32Mask;//这是什么？
 }SVP_SAMPLE_BOX_S;
 

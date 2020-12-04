@@ -1,18 +1,8 @@
-/******************************************************************************
-
-  Copyright (C), 2001-2017, Hisilicon Tech. Co., Ltd.
-
- ******************************************************************************
-  File Name     : hi_comm_svp.h
-  Version       : Initial Draft
-  Author        : Hisilicon multimedia software (SVP) group
-  Created       : 2017/09/19
-  Description   :
-  History       :
-  1.Date        : 2017/09/19
-    Author      :
-    Modification: Created file
-******************************************************************************/
+/*
+*** 注释标签说明：
+*** QUES: 没看懂的问题，待解释？
+*** TODO: 懂抽象层面含义，需要补充细节
+*/
 
 #ifndef __HI_COMM_SVP_H__
 #define __HI_COMM_SVP_H__
@@ -26,7 +16,7 @@ extern "C"{
 #include "hi_type.h"
 #include "hi_errno.h"
 
-/*Blob type*/
+//blob类型
 typedef enum hiSVP_BLOB_TYPE_E
 {
     SVP_BLOB_TYPE_S32       =  0x0,
@@ -45,26 +35,14 @@ typedef enum hiSVP_BLOB_TYPE_E
     SVP_BLOB_TYPE_BUTT
 }SVP_BLOB_TYPE_E;
 
-/****************************** Blob struct ******************************
-In Caffe, the blob contain shape info as the following order:
-Image\FeatureMap:               N       C       H       W
-FC(normal vector):              N       C
-RNN\LSTM(Recurrent) vector:     T       N       D
-
-The relationship of the following blob struct with Caffe blob is as follows:
-Image\FeatureMap:               Num    Chn    Height   With
-FC(VEC_S32):                    Num    Width
-RNN\LSTM(SEQ_S32) vector:       Step   Num     Dim
-The stride, which measuring unit is byte, is always algined by the width or
-dim direction.
-**************************************************************************/
+//caffe中的blob，也就是[N，C，H，W]
 typedef struct hiSVP_BLOB_S
 {
-     SVP_BLOB_TYPE_E enType;     /*Blob type*/
-     HI_U32 u32Stride;           /*Stride, a line bytes num*/
+     SVP_BLOB_TYPE_E enType;     //类型，枚举结构体
+     HI_U32 u32Stride;           /*Stride, a line bytes num*///QUES: strade=sizeof(element)*weight?
 
-     HI_U64 u64VirAddr;          /*virtual addr*/
-     HI_U64 u64PhyAddr;          /*physical addr*/
+     HI_U64 u64VirAddr;          //虚拟内存地址
+     HI_U64 u64PhyAddr;          //物理内存地址
 
     HI_U32      u32Num;         /*N: frame num or sequence num,correspond to caffe blob's n*/
     union
