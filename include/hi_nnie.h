@@ -29,6 +29,7 @@ extern "C"{
 typedef HI_S32 SVP_NNIE_HANDLE;
 
 /**************************************SVP_NNIE Error Code*******************************************/
+//nnie框架的错误代码，处理超时，请求超时，配置错误，打开文件错误，读文件错误，写文件错误
 typedef enum hiEN_SVP_NNIE_ERR_CODE_E
 {
     ERR_SVP_NNIE_SYS_TIMEOUT    = 0x40,   /* SVP_NNIE process timeout */

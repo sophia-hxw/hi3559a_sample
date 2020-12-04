@@ -1,3 +1,8 @@
+/*
+*** 注释标签说明：
+*** QUES: 没看懂的问题，待解释？
+*** TODO: 懂抽象层面含义，需要补充细节
+*/
 #include "SvpSampleWk.h"
 #include "SvpSampleCom.h"
 #include "mpi_nnie.h"
@@ -7,12 +12,14 @@
 #include "cv_draw_rect.h"
 #endif
 
+//测试图片
 const HI_CHAR *g_paszPicList_d[][SVP_NNIE_MAX_INPUT_NUM] = {
     { "../data/detection/yolov1/image_test_list.txt" },
     { "../data/detection/yolov2/image_test_list.txt" },
     { "../data/detection/ssd/image_test_list.txt" }
 };
 
+//模型文件，即模型名称
 #ifndef USE_FUNC_SIM /* inst wk */
 const HI_CHAR *g_paszModelName_d[] = {
     "../data/detection/yolov1/inst/inst_yolov1_inst.wk",
@@ -26,8 +33,10 @@ const HI_CHAR *g_paszModelName_d[] = {
     "../data/detection/ssd/inst/inst_ssd_func.wk"
 };
 #endif
+//QUES: inst和func有什么区别？
 
 /* the order is same with SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E*/
+//顺序跟SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E相同？
 const HI_CHAR *g_paszModelType_d[] = {
     "SVP_SAMPLE_YOLO_V1",
     "SVP_SAMPLE_YOLO_V2",
@@ -35,18 +44,20 @@ const HI_CHAR *g_paszModelType_d[] = {
     "SVP_SAMPLE_DET_UNKNOWN",
 };
 
+//forward，参数：一阶段检测参数，配置文件式参数
 HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNIE_CFG_S *pstDetCfg)
 {
     HI_S32 s32Ret = HI_SUCCESS;
-    SVP_NNIE_HANDLE SvpNnieHandle;
-    SVP_NNIE_ID_E enNnieId = SVP_NNIE_ID_0;
-    HI_BOOL bInstant = HI_TRUE;
+    SVP_NNIE_HANDLE SvpNnieHandle;//nnie框架句柄，就是一个HI_S32类型
+    SVP_NNIE_ID_E enNnieId = SVP_NNIE_ID_0;//这是啥变量？
+    HI_BOOL bInstant = HI_TRUE;//标志(是否产生中断，如果输出会阻塞下一步操作时为真)
     HI_BOOL bFinish  = HI_FALSE;
     HI_BOOL bBlock   = HI_TRUE;
 
     s32Ret = HI_MPI_SVP_NNIE_Forward(&SvpNnieHandle, pstDetParam->astSrc, &pstDetParam->stModel,
         pstDetParam->astDst, &pstDetParam->stCtrl, bInstant);
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "Error(%#x): CNN_Forward failed!", s32Ret);
+    
     s32Ret = HI_MPI_SVP_NNIE_Query(enNnieId, SvpNnieHandle, &bFinish, bBlock);
     while (HI_ERR_SVP_NNIE_QUERY_TIMEOUT == s32Ret)
     {
