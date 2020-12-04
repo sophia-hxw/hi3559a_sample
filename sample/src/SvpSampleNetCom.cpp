@@ -18,14 +18,17 @@ HI_S32 SvpSampleReadWK(const HI_CHAR *pszModelName, SVP_MEM_INFO_S *pstModelBuf)
     CHECK_EXP_RET(NULL == pstModelBuf, HI_ERR_SVP_NNIE_ILLEGAL_PARAM,
         "Error(%#x): model buf is null", HI_ERR_SVP_NNIE_NULL_PTR);
 
+    //打开模型文件
     pfModel = SvpSampleOpenFile(pszModelName, "rb");
     CHECK_EXP_RET(NULL == pfModel, HI_ERR_SVP_NNIE_OPEN_FILE,
         "Error(%#x): open model file(%s) failed", HI_ERR_SVP_NNIE_OPEN_FILE, pszModelName);
 
+    //TODO 理解fseek和ftell的含义？
     fseek(pfModel, 0, SEEK_END);
     pstModelBuf->u32Size = ftell(pfModel);
     fseek(pfModel, 0, SEEK_SET);
 
+    //分配存储
     s32Ret = SvpSampleMallocMem(NULL, NULL, pstModelBuf->u32Size, pstModelBuf);
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail, "Error(%#x): Malloc model buf failed!", s32Ret);
 
@@ -41,7 +44,7 @@ Fail:
     return s32Ret;
 }
 
-//
+//一阶段常用初始化，参数：配置文件式参数，一阶段结构体，lstm运行时参数
 static HI_S32 SvpSampleOneSegCommonInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_SEG_S *pstComfParam, SVP_SAMPLE_LSTMRunTimeCtx *pstLSTMCtx)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -63,12 +66,15 @@ static HI_S32 SvpSampleOneSegCommonInit(SVP_NNIE_CFG_S *pstClfCfg, SVP_NNIE_ONE_
     SVP_MEM_INFO_S *pstTskBuf = &pstComfParam->stTskBuf;
 
     /******************** step1, load wk file, *******************************/
+    //读模型文件
     s32Ret = SvpSampleReadWK(pstClfCfg->pszModelName, pstModelBuf);
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "Error(%#x): read model file(%s) failed", s32Ret, pstClfCfg->pszModelName);
 
+    //读网络结构
     s32Ret = HI_MPI_SVP_NNIE_LoadModel(pstModelBuf, &(pstComfParam->stModel));
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail1, "Error(%#x): LoadModel from %s failed!", s32Ret, pstClfCfg->pszModelName);
 
+    //模型缓存
     pstComfParam->u32TmpBufSize = pstComfParam->stModel.u32TmpBufSize;
 
     /******************** step2, malloc tmp_buf *******************************/

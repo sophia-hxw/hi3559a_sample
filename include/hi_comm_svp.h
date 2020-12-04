@@ -86,12 +86,12 @@ typedef struct hiSVP_BLOB_S
 typedef SVP_BLOB_S  SVP_SRC_BLOB_S;
 typedef SVP_BLOB_S  SVP_DST_BLOB_S;
 
-/*Mem information*/
+//存储信息结构体
 typedef struct hiSVP_MEM_INFO_S
 {
-    HI_U64  u64PhyAddr; /* RW;The physical address of the memory */
-    HI_U64  u64VirAddr; /* RW;The virtual address of the memory */
-    HI_U32  u32Size;    /* RW;The size of memory */
+    HI_U64  u64PhyAddr; //物理存储地址
+    HI_U64  u64VirAddr; //虚拟存储地址
+    HI_U32  u32Size;    //大小
 }SVP_MEM_INFO_S;
 
 typedef SVP_MEM_INFO_S SVP_SRC_MEM_INFO_S;
