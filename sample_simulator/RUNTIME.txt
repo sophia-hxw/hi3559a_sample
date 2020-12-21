@@ -1,9 +1,0 @@
-Name: Vop0
-Classify: VOP
-Sub_net_type: 0
-Input: data [Exist] [bond_1][3][227][227] 
-Output: prob [bond_0][1000][1][1] 
-Report_flag: -1 
-Order: 0
-Layer_cnt: 16
-
