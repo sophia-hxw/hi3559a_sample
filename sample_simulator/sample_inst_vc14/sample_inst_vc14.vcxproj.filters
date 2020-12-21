@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\detection\common\src\detectionCom.cpp">
+      <Filter>Detection\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\detection\fasterrcnn\src\fasterrcnn_interface.cpp">
+      <Filter>Detection\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\detection\rfcn\src\rfcn_interface.cpp">
+      <Filter>Detection\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\detection\yolo\src\yolo_interface.cpp">
+      <Filter>Detection\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\detection\ssd\src\ssd_interface.cpp">
+      <Filter>Detection\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\detection\ssd\src\ssd_software.cpp">
+      <Filter>Detection\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\main.cpp" />
+    <ClCompile Include="..\src\SvpSampleCom.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleClassification.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleDetectionOneSeg.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleFasterRcnn.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleLSTM.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleNetCom.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleRFCN.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleSegnet.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleYolov1.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleYolov2.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleYolov3.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\SvpSampleSsd.cpp">
+      <Filter>SvpSample\src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\detection\common\include\detectionCom.h">
+      <Filter>Detection\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\detection\fasterrcnn\include\fasterrcnn_interface.h">
+      <Filter>Detection\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\detection\rfcn\include\rfcn_interface.h">
+      <Filter>Detection\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\detection\yolo\include\yolo_interface.h">
+      <Filter>Detection\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\detection\ssd\include\ssd_interface.h">
+      <Filter>Detection\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\detection\ssd\include\ssd_software.h">
+      <Filter>Detection\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SvpSampleCom.h">
+      <Filter>SvpSample\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SvpSampleWk.h">
+      <Filter>SvpSample\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SvpSampleSsd.h">
+      <Filter>SvpSample\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\SvpSampleYolo.h">
+      <Filter>SvpSample\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="SvpSample">
+      <UniqueIdentifier>{61479bf7-020a-4fa4-a075-3923dc6e9ea1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Detection">
+      <UniqueIdentifier>{997f71d8-7368-4431-8d18-7f6cf7bad88d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SvpSample\include">
+      <UniqueIdentifier>{fa6ba311-7661-4f82-b18b-5787185969b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SvpSample\src">
+      <UniqueIdentifier>{8680ba70-01e5-4902-91b0-a9e33f3b12d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Detection\src">
+      <UniqueIdentifier>{3c7e5452-9e94-4368-b9a0-e556cb574ee2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Detection\include">
+      <UniqueIdentifier>{6980c43e-9588-4dfd-8f73-a09e64b45551}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
