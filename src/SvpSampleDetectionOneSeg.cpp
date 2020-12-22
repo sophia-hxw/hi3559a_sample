@@ -28,7 +28,7 @@ const HI_CHAR *g_paszModelName_d[] = {
 const HI_CHAR *g_paszModelName_d[] = {
     "../../data/detection/yolov1/inst/inst_yolov1_func.wk",
     "../../data/detection/yolov2/inst/inst_yolov2_func.wk",
-   // "../../data/detection/yolov3/inst/inst_yolov3_func.wk",
+    "../../data/detection/yolov3/inst/inst_yolov3_func.wk",
 	"../../data/detection/yolov3/inst/yolov3_func_test.wk",
     "../../data/detection/ssd/inst/inst_ssd_func.wk"
 };
@@ -414,14 +414,14 @@ void SvpSampleCnnDetYoloV3()
 {
     printf("%s start ...\n", __FUNCTION__);
     SvpSampleCnnDetectionOneSeg(
-    		// 模型名字与路径
+        // 模型名字与路径
         g_paszModelName_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
-        	// 图片路径
+        // 图片路径
 		g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
 
         SVP_SAMPLE_WK_DETECT_NET_YOLOV3);
     printf("%s end ...\n\n", __FUNCTION__);
-    fflush(stdout);
+    fflush(stdout);//[TODO]理解fflush作用？
 }
 
 void SvpSampleCnnDetSSD()
