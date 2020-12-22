@@ -69,24 +69,26 @@ typedef struct hiSVP_WK_PARAM_RUNONCE_S
     SVP_NNIE_FORWARD_WITHBBOX_CTRL_S stBboxCtrl[SVP_NNIE_MAX_NET_SEG_NUM];
 }SVP_WK_PARAM_RUNONECE_S;
 
-//
+//config参数
 typedef struct hiSVP_WK_CFG_S
 {
-    const HI_CHAR *pszModelName;
-    const HI_CHAR *pszPicList;
+    const HI_CHAR *pszModelName;//模型名称
+    const HI_CHAR *pszPicList;//图片列表
 
-    HI_U32 u32MaxInputNum;
-    HI_U32 u32MaxBboxNum;
+    HI_U32 u32MaxInputNum;//最大输入数量
+    HI_U32 u32MaxBboxNum;//最大bbox数量
 
-    HI_U32 u32TopN;
+    HI_U32 u32TopN;//算法中的topN
 }SVP_WK_CFG_S;
 
+//分类结果结构体，参数：类别，置信度
 typedef struct hiSVP_SAMPLE_CLF_RES_S
 {
     HI_U32   u32ClassId;
     HI_U32   u32Confidence;
 }SVP_SAMPLE_CLF_RES_S;
 
+//一阶段网络
 typedef struct hiSVP_NNIE_ONE_SEG_S
 {
     HI_U32 u32TotalImgNum;
