@@ -41,21 +41,23 @@ using namespace std;
 /*SVP_SAMPLE_FILE_NAME_PAIR first:
  * basic filename, second: filename suffix
  * pair<string, string>
- * ���е�����ȡһ���µ�����SVP_SAMPLE_FILE_NAME_PAIR
  * */
 typedef pair<string, string> SVP_SAMPLE_FILE_NAME_PAIR;
 
+//
 typedef struct hiSVP_WK_PARAM_RUNONCE_S
 {
     // those below param is shared by all segments in one net.
-    HI_U32 u32ModelBufSize;
+    //整个网络的所有segments共享的参数，会贯穿整个网络生命周期
+    SVP_MEM_INFO_S   stTmpBuf;
     HI_U32 u32TmpBufSize;
 
     SVP_NNIE_MODEL_S stModel;
     SVP_MEM_INFO_S   stModelBuf;
-    SVP_MEM_INFO_S   stTmpBuf;
+    HI_U32 u32ModelBufSize;
 
     // those below param is owned by individual segment.
+    //每个segment自己独自拥有的参数
     SVP_MEM_INFO_S astTskBuf[SVP_NNIE_MAX_NET_SEG_NUM];
     HI_U32 au32TaskBufSize[SVP_NNIE_MAX_NET_SEG_NUM];
 
@@ -67,41 +69,44 @@ typedef struct hiSVP_WK_PARAM_RUNONCE_S
     SVP_NNIE_FORWARD_WITHBBOX_CTRL_S stBboxCtrl[SVP_NNIE_MAX_NET_SEG_NUM];
 }SVP_WK_PARAM_RUNONECE_S;
 
+//config参数
 typedef struct hiSVP_WK_CFG_S
 {
-    const HI_CHAR *pszModelName;
-    const HI_CHAR *pszPicList;
+    const HI_CHAR *pszModelName;//模型名称
+    const HI_CHAR *pszPicList;//图片列表
 
-    HI_U32 u32MaxInputNum;
-    HI_U32 u32MaxBboxNum;
+    HI_U32 u32MaxInputNum;//最大输入数量
+    HI_U32 u32MaxBboxNum;//最大bbox数量
 
-    HI_U32 u32TopN;
+    HI_U32 u32TopN;//算法中的topN
 }SVP_WK_CFG_S;
 
+//分类结果结构体，参数：类别，置信度
 typedef struct hiSVP_SAMPLE_CLF_RES_S
 {
     HI_U32   u32ClassId;
     HI_U32   u32Confidence;
 }SVP_SAMPLE_CLF_RES_S;
 
+//一阶段网络
 typedef struct hiSVP_NNIE_ONE_SEG_S
 {
-    HI_U32 u32TotalImgNum;
-    FILE *fpSrc[SVP_NNIE_MAX_INPUT_NUM];
-    FILE *fpLabel[SVP_NNIE_MAX_OUTPUT_NUM];
-
-    HI_U32 u32ModelBufSize;
-    HI_U32 u32TmpBufSize;
+    HI_U32 u32TotalImgNum;//图片总数
+    FILE *fpSrc[SVP_NNIE_MAX_INPUT_NUM];//数据源
+    FILE *fpLabel[SVP_NNIE_MAX_OUTPUT_NUM];//标签源
 
     SVP_NNIE_MODEL_S    stModel;
     SVP_MEM_INFO_S      stModelBuf;
+    HI_U32 u32ModelBufSize;
+
     SVP_MEM_INFO_S      stTmpBuf;
+    HI_U32 u32TmpBufSize;
 
     SVP_MEM_INFO_S      stTskBuf;
     HI_U32 u32TaskBufSize;
 
-    SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];
-    SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];
+    SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];//输入blob
+    SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];//输出blob
 
     SVP_NNIE_FORWARD_CTRL_S stCtrl;
 
