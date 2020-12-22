@@ -304,7 +304,7 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "SvpSampleMkdir(%s) failed", strResultFolderDir.c_str());
     stDetCfg.pszModelName = pszModelName;
 
-    //它的功能是从src的开始位置拷贝n个字节的数据到dest。
+    //把paszPicList拷贝到&stDetCfg.paszPicList
     // dest,src,n 如果dest存在数据，将会被覆盖
     memcpy(&stDetCfg.paszPicList, paszPicList, sizeof(HI_VOID*)*s32Cnt);
     stDetCfg.u32MaxInputNum = u32MaxInputNum; //max input image num in each batch
