@@ -41,21 +41,23 @@ using namespace std;
 /*SVP_SAMPLE_FILE_NAME_PAIR first:
  * basic filename, second: filename suffix
  * pair<string, string>
- * ���е�����ȡһ���µ�����SVP_SAMPLE_FILE_NAME_PAIR
  * */
 typedef pair<string, string> SVP_SAMPLE_FILE_NAME_PAIR;
 
+//
 typedef struct hiSVP_WK_PARAM_RUNONCE_S
 {
     // those below param is shared by all segments in one net.
-    HI_U32 u32ModelBufSize;
+    //整个网络的所有segments共享的参数，会贯穿整个网络生命周期
+    SVP_MEM_INFO_S   stTmpBuf;
     HI_U32 u32TmpBufSize;
 
     SVP_NNIE_MODEL_S stModel;
     SVP_MEM_INFO_S   stModelBuf;
-    SVP_MEM_INFO_S   stTmpBuf;
+    HI_U32 u32ModelBufSize;
 
     // those below param is owned by individual segment.
+    //每个segment自己独自拥有的参数
     SVP_MEM_INFO_S astTskBuf[SVP_NNIE_MAX_NET_SEG_NUM];
     HI_U32 au32TaskBufSize[SVP_NNIE_MAX_NET_SEG_NUM];
 
@@ -67,6 +69,7 @@ typedef struct hiSVP_WK_PARAM_RUNONCE_S
     SVP_NNIE_FORWARD_WITHBBOX_CTRL_S stBboxCtrl[SVP_NNIE_MAX_NET_SEG_NUM];
 }SVP_WK_PARAM_RUNONECE_S;
 
+//
 typedef struct hiSVP_WK_CFG_S
 {
     const HI_CHAR *pszModelName;
