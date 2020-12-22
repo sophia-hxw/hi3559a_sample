@@ -91,22 +91,22 @@ typedef struct hiSVP_SAMPLE_CLF_RES_S
 //一阶段网络
 typedef struct hiSVP_NNIE_ONE_SEG_S
 {
-    HI_U32 u32TotalImgNum;
-    FILE *fpSrc[SVP_NNIE_MAX_INPUT_NUM];
-    FILE *fpLabel[SVP_NNIE_MAX_OUTPUT_NUM];
-
-    HI_U32 u32ModelBufSize;
-    HI_U32 u32TmpBufSize;
+    HI_U32 u32TotalImgNum;//图片总数
+    FILE *fpSrc[SVP_NNIE_MAX_INPUT_NUM];//数据源
+    FILE *fpLabel[SVP_NNIE_MAX_OUTPUT_NUM];//标签源
 
     SVP_NNIE_MODEL_S    stModel;
     SVP_MEM_INFO_S      stModelBuf;
+    HI_U32 u32ModelBufSize;
+
     SVP_MEM_INFO_S      stTmpBuf;
+    HI_U32 u32TmpBufSize;
 
     SVP_MEM_INFO_S      stTskBuf;
     HI_U32 u32TaskBufSize;
 
-    SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];
-    SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];
+    SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];//输入blob
+    SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];//输出blob
 
     SVP_NNIE_FORWARD_CTRL_S stCtrl;
 
