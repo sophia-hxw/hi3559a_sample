@@ -1,3 +1,9 @@
+/*
+符号说明：
+[QUES]:待说明或者后续需要反复理解的问题？
+[TODO]:查资料可解决的问题
+[DONE]:已经解决的问题
+*/
 #include "SvpSampleWk.h"
 #include "SvpSampleCom.h"
 
@@ -278,7 +284,7 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
     /* 2. declare definitions */
     HI_S32 s32Ret = HI_SUCCESS;
 
-    // 这里的num含义是啥？
+    // 这里的num含义是啥？[DONE]
     HI_U32 u32MaxInputNum = SVP_NNIE_MAX_INPUT_NUM;
     HI_U32 u32Batch   = 0;
     HI_U32 u32LoopCnt = 0;
