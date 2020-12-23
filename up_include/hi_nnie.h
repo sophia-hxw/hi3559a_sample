@@ -12,6 +12,11 @@
   1.Date        : 2017/09/19
     Author      :
     Modification: Created file
+
+符号说明：
+[QUES]:待说明或者后续需要反复理解的问题？
+[TODO]:查资料可解决的问题
+[DONE]:已经解决的问题
 ******************************************************************************/
 #ifndef _HI_NNIE_H_
 #define _HI_NNIE_H_
@@ -177,13 +182,14 @@ typedef struct hiSVP_NNIE_ROIPOOL_INFO_S
 
 /***************************************************************/
 /*Segment information*/
+//segment信息
 typedef struct hiSVP_NNIE_SEG_S
 {
-    SVP_NNIE_NET_TYPE_E enNetType;
-    HI_U16              u16SrcNum;
-    HI_U16              u16DstNum;
-    HI_U16              u16RoiPoolNum;
-    HI_U16              u16MaxStep;
+    SVP_NNIE_NET_TYPE_E enNetType;//net类型
+    HI_U16              u16SrcNum;//输入数量
+    HI_U16              u16DstNum;//输出数量
+    HI_U16              u16RoiPoolNum;//roipool数量
+    HI_U16              u16MaxStep;//
 
     HI_U32              u32InstOffset;
     HI_U32              u32InstLen;
@@ -194,16 +200,17 @@ typedef struct hiSVP_NNIE_SEG_S
 }SVP_NNIE_SEG_S;
 
 /*NNIE model*/
+//nnie框架上的模型参数结构体
 typedef struct hiSVP_NNIE_MODEL_S
 {
-    SVP_NNIE_RUN_MODE_E     enRunMode;
+    SVP_NNIE_RUN_MODE_E     enRunMode;//运行模式
 
     HI_U32                  u32TmpBufSize; /*temp buffer size*/
-    HI_U32                  u32NetSegNum;
-    SVP_NNIE_SEG_S          astSeg[SVP_NNIE_MAX_NET_SEG_NUM];
+    HI_U32                  u32NetSegNum; //segment数量
+    SVP_NNIE_SEG_S          astSeg[SVP_NNIE_MAX_NET_SEG_NUM]; //nnie上的segment，最大值=8
     SVP_NNIE_ROIPOOL_INFO_S astRoiInfo[SVP_NNIE_MAX_ROI_LAYER_NUM]; /*ROIPooling info*/
 
-    SVP_MEM_INFO_S          stBase;
+    SVP_MEM_INFO_S          stBase;//内存信息？[QUES]
 }SVP_NNIE_MODEL_S;
 
 typedef struct hiSVP_NNIE_FORWARD_CTRL_S

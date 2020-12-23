@@ -611,9 +611,9 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg,
 
     // SVP_SAMPLE_MAX_PATH 最长路径名 长度 默认256
     HI_CHAR aszImg[SVP_SAMPLE_MAX_PATH] = { '\0' };
-    // 输入节点个数
+    // 输入节点个数初始化
     HI_U16 u16SrcNum = 0;
-    //输出节点个数
+    //输出节点个数初始化
     HI_U16 u16DstNum = 0;
 
     SVP_MEM_INFO_S *pstModelBuf = &pstComfParam->stModelBuf;
@@ -627,8 +627,8 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg,
     s32Ret = HI_MPI_SVP_NNIE_LoadModel(pstModelBuf, &(pstComfParam->stModel));
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail1, "Error(%#x): LoadModel from %s failed!", s32Ret, pstClfCfg->pszModelName);
 
-    u16SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;
-    u16DstNum = pstComfParam->stModel.astSeg[0].u16DstNum;
+    u16SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;// 输入节点个数实际值，从模型处获取
+    u16DstNum = pstComfParam->stModel.astSeg[0].u16DstNum;//输出节点个数实际值，从模型处获取
 
     /******************** step2, malloc tmp_buf *******************************/
     pstComfParam->u32TmpBufSize = pstComfParam->stModel.u32TmpBufSize;

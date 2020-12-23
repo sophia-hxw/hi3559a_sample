@@ -141,8 +141,8 @@ typedef struct hiSVP_NNIE_ONE_SEG_DET_S
     SVP_MEM_INFO_S      stTmpBuf;
     HI_U32 u32TmpBufSize;
 
-    SVP_NNIE_MODEL_S    stModel;
-    SVP_MEM_INFO_S      stModelBuf;
+    SVP_NNIE_MODEL_S    stModel;//then, load model from ModelBuf to Model
+    SVP_MEM_INFO_S      stModelBuf;//first, wk->ModelBuf
     HI_U32 u32ModelBufSize;
     
     SVP_MEM_INFO_S      stTskBuf;
