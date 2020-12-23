@@ -16,12 +16,24 @@
 #include "cv_draw_rect.h"
 #endif
 
+//测试图片列表，顺序与SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E相同
 const HI_CHAR *g_paszPicList_d[][SVP_NNIE_MAX_INPUT_NUM] = {
     { "../../data/detection/yolov1/image_test_list.txt" },
     { "../../data/detection/yolog_paszPicList_dv2/image_test_list.txt" },
     { "../../data/detection/yolov3/image_test_list.txt" },
     { "../../data/detection/ssd/image_test_list.txt"    }
 };
+
+/* the order is same with SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E*/
+//模型名称，顺序与SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E相同
+const HI_CHAR *g_paszModelType_d[] = {
+    "SVP_SAMPLE_YOLO_V1",
+    "SVP_SAMPLE_YOLO_V2",
+    "SVP_SAMPLE_YOLO_V3",
+    "SVP_SAMPLE_SSD",
+    "SVP_SAMPLE_DET_UNKNOWN",
+};
+
 
 #ifndef USE_FUNC_SIM /* inst wk */
 const HI_CHAR *g_paszModelName_d[] = {
@@ -40,29 +52,22 @@ const HI_CHAR *g_paszModelName_d[] = {
 };
 #endif
 
-/* the order is same with SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E*/
-const HI_CHAR *g_paszModelType_d[] = {
-    "SVP_SAMPLE_YOLO_V1",
-    "SVP_SAMPLE_YOLO_V2",
-    "SVP_SAMPLE_YOLO_V3",
-    "SVP_SAMPLE_SSD",
-    "SVP_SAMPLE_DET_UNKNOWN",
-};
 
+//一次前传？
 HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNIE_CFG_S *pstDetCfg)
 {
     HI_S32 s32Ret = HI_SUCCESS;
 
     // 任务句柄，标识不同的任务
-    SVP_NNIE_HANDLE SvpNnieHandle = 0;
-    SVP_NNIE_ID_E enNnieId = SVP_NNIE_ID_0;
+    SVP_NNIE_HANDLE SvpNnieHandle = 0;//typedef HI_S32 SVP_NNIE_HANDLE
+    SVP_NNIE_ID_E enNnieId = SVP_NNIE_ID_0;//框架ID，类似硬件编号
 
     // 返回结果的标志 bInstant
     HI_BOOL bInstant = HI_TRUE;
     HI_BOOL bFinish  = HI_FALSE;
     HI_BOOL bBlock   = HI_TRUE;
 
-    // 多节点输入输出的CNN类型网络预测
+    // 多节点输入输出的CNN类型网络预测，参数：框架句柄，输入输出blob数组，model结构体，框架结构体stCtrl，运行结果标志
     s32Ret = HI_MPI_SVP_NNIE_Forward(&SvpNnieHandle, pstDetParam->astSrc, &pstDetParam->stModel,
         pstDetParam->astDst, &pstDetParam->stCtrl, bInstant);
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "Error(%#x): CNN_Forward failed!", s32Ret);
@@ -260,7 +265,7 @@ static HI_S32* s_SvpSampleDetOneSegGetResultMem(HI_U8 netType, SVP_NNIE_SSD_S *p
 
 
 
-// 这里做一些解释性的东西
+// 一个segment检测模型，参数：模型名称，图片list，网络类型，默认参数s32Cnt=1
 HI_S32 SvpSampleCnnDetectionOneSeg(
 		const HI_CHAR *pszModelName,
 		const HI_CHAR *paszPicList[],

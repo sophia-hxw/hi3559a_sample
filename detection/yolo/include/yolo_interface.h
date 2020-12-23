@@ -5,12 +5,14 @@
 
 /************************************************************************/
 /* Yolo NMS, use SVP_SAMPLE_BOX_S input                                 */
+/* Yolo中的非极大值抑制算法 */
 /************************************************************************/
 HI_S32 SvpDetYoloNonMaxSuppression(SVP_SAMPLE_BOX_S* pstBoxs, HI_U32 u32BoxNum,
     HI_FLOAT f32NmsThresh, HI_U32 u32MaxRoiNum);
 
 /************************************************************************/
 /* get Yolo calc result                                                 */
+/* print出结果 */
 /************************************************************************/
 void SvpDetYoloResultPrint(const SVP_SAMPLE_BOX_RESULT_INFO_S *pstResultBoxesInfo,
     HI_U32 u32BoxNum, std::string& strResultFolderDir, SVP_SAMPLE_FILE_NAME_PAIR& imgNamePair);
