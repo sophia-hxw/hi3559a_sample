@@ -94,7 +94,7 @@ typedef struct hiSVP_SAMPLE_CLF_RES_S
     HI_U32   u32Confidence;
 }SVP_SAMPLE_CLF_RES_S;
 
-//一阶段网络的通用参数
+//一阶段的通用参数
 typedef struct hiSVP_NNIE_ONE_SEG_S
 {
     HI_U32 u32TotalImgNum;//图片总数
@@ -123,7 +123,7 @@ typedef struct hiSVP_NNIE_ONE_SEG_S
     HI_U32 au32ClfNum[SVP_NNIE_MAX_OUTPUT_NUM];
 }SVP_NNIE_ONE_SEG_S;
 
-//结果内存头？参数：类型和长度
+//结果内存头[QUES]？参数：类型和长度
 typedef struct hiSVP_SAMPLE_RESULT_MEM_HEAD_S
 {
     HI_U32 u32Type;
@@ -131,7 +131,7 @@ typedef struct hiSVP_SAMPLE_RESULT_MEM_HEAD_S
     /* HI_U32* pu32Mem; */
 }SVP_SAMPLE_RESULT_MEM_HEAD_S;
 
-//一阶段的检测
+//一阶段的检测参数
 typedef struct hiSVP_NNIE_ONE_SEG_DET_S
 {
     HI_U32 u32TotalImgNum;

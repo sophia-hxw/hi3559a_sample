@@ -603,7 +603,7 @@ HI_S32 SvpSampleLSTMDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
     return HI_SUCCESS;
 }
 
-//加载模型，申请mmz空间
+//一阶段检测模型初始化，参数：nnie的config参数，一阶段检测网络参数，网络类型
 HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg,
 		SVP_NNIE_ONE_SEG_DET_S *pstComfParam, const HI_U8 netType)
 {
@@ -611,7 +611,7 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg,
 
     // SVP_SAMPLE_MAX_PATH 最长路径名 长度 默认256
     HI_CHAR aszImg[SVP_SAMPLE_MAX_PATH] = { '\0' };
-// 输入节点个数
+    // 输入节点个数
     HI_U16 u16SrcNum = 0;
     //输出节点个数
     HI_U16 u16DstNum = 0;

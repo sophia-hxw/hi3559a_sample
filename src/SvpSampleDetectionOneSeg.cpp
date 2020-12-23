@@ -275,7 +275,7 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
 
     /**************************************************************************/
     /* 1. check input para */
-	// // TRACE宏只有在调试状态下才有所输出，所以只对Debug 版本的工程产生作用，
+	// TRACE宏只有在调试状态下才有所输出，所以只对Debug 版本的工程产生作用，
 	// 而在Release 版本的工程中，TRACE宏将被忽略
 	// 返回 HI_ERR_SVP_NNIE_NULL_PTR
     CHECK_EXP_RET(NULL == pszModelName, HI_ERR_SVP_NNIE_NULL_PTR, "Error(%#x): %s input pszModelName nullptr error!", HI_ERR_SVP_NNIE_NULL_PTR, __FUNCTION__);
@@ -290,12 +290,13 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
     HI_S32 s32Ret = HI_SUCCESS;
 
     // 这里的num含义是啥？[DONE]
-    HI_U32 u32MaxInputNum = SVP_NNIE_MAX_INPUT_NUM;
+    HI_U32 u32MaxInputNum = SVP_NNIE_MAX_INPUT_NUM;//16，hi_nnie.h
     HI_U32 u32Batch   = 0;
     HI_U32 u32LoopCnt = 0;
     HI_U32 u32StartId = 0;
 
-    // TODO 名字结构体  参数的含义，区别是啥
+    // TODO 名字结构体  参数的含义，区别是啥? [DONE]
+    // 从模型wk文件，网络结构和硬件参数三个维度理解
     SVP_NNIE_ONE_SEG_DET_S stDetParam = { 0 };
     SVP_NNIE_CFG_S stDetCfg = { 0 };
 
@@ -307,12 +308,13 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
     string strResultFolderDir = "result_" + strNetType + "/";
     s32Ret = SvpSampleMkdir(strResultFolderDir.c_str());
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "SvpSampleMkdir(%s) failed", strResultFolderDir.c_str());
-    stDetCfg.pszModelName = pszModelName;
+    stDetCfg.pszModelName = pszModelName;//const HI_CHAR *pszModelName;
 
     //把paszPicList拷贝到&stDetCfg.paszPicList
-    // dest,src,n 如果dest存在数据，将会被覆盖
+    // void	*memcpy(void *__dst, const void *__src, size_t __n) 如果dst存在数据，将会被覆盖
+    // paszPicList = "../../data/detection/yolov3/image_test_list.txt"
     memcpy(&stDetCfg.paszPicList, paszPicList, sizeof(HI_VOID*)*s32Cnt);
-    stDetCfg.u32MaxInputNum = u32MaxInputNum; //max input image num in each batch
+    stDetCfg.u32MaxInputNum = u32MaxInputNum; //16，hi_nnie.h
     stDetCfg.u32MaxBboxNum = 0;
 
     //加载模型，申请mmz空间
@@ -424,13 +426,15 @@ void SvpSampleCnnDetYoloV2()
 void SvpSampleCnnDetYoloV3()
 {
     printf("%s start ...\n", __FUNCTION__);
+    HI_U8 net_name = SVP_SAMPLE_WK_DETECT_NET_YOLOV3
     SvpSampleCnnDetectionOneSeg(
         // 模型名字与路径
-        g_paszModelName_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
+        // g_paszModelName_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
         // 图片路径
-		g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
+        // g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
 
-        SVP_SAMPLE_WK_DETECT_NET_YOLOV3);
+        // SVP_SAMPLE_WK_DETECT_NET_YOLOV3
+        g_paszModelName_d[net_name], g_paszPicList_d[net_name], net_name);
     printf("%s end ...\n\n", __FUNCTION__);
     fflush(stdout);//[TODO]理解fflush作用？
 }
