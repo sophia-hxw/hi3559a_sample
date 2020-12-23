@@ -143,7 +143,7 @@ typedef struct hiSVP_NNIE_ONE_SEG_DET_S
 
     SVP_NNIE_MODEL_S    stModel;//then, load model from ModelBuf to Model
     SVP_MEM_INFO_S      stModelBuf;//first, wk->ModelBuf
-    HI_U32 u32ModelBufSize;
+    HI_U32 u32ModelBufSize;//[QUES]在哪里初始化的？
     
     SVP_MEM_INFO_S      stTskBuf;
     HI_U32 u32TaskBufSize;

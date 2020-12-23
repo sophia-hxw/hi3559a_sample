@@ -125,6 +125,7 @@ typedef enum hiSVP_NNIE_NET_TYPE_E
 }SVP_NNIE_NET_TYPE_E;
 
 /*Node information*/
+//节点信息
 typedef struct hiSVP_NNIE_NODE_S
 {
     SVP_BLOB_TYPE_E  enType;
@@ -140,7 +141,7 @@ typedef struct hiSVP_NNIE_NODE_S
     }unShape;
     HI_U32 u32NodeId;
     /*report layer bottom name or data layer bottom name*/
-    HI_CHAR szName[SVP_NNIE_NODE_NAME_LEN];
+    HI_CHAR szName[SVP_NNIE_NODE_NAME_LEN];//节点名称，最长字符串=32
 }SVP_NNIE_NODE_S;
 
 /*Roi/Psroi Pooling type*/
@@ -185,7 +186,7 @@ typedef struct hiSVP_NNIE_ROIPOOL_INFO_S
 //segment信息
 typedef struct hiSVP_NNIE_SEG_S
 {
-    SVP_NNIE_NET_TYPE_E enNetType;//net类型
+    SVP_NNIE_NET_TYPE_E enNetType;//net类型，CNN，ROI，RECURRENT
     HI_U16              u16SrcNum;//输入数量
     HI_U16              u16DstNum;//输出数量
     HI_U16              u16RoiPoolNum;//roipool数量
@@ -205,7 +206,7 @@ typedef struct hiSVP_NNIE_MODEL_S
 {
     SVP_NNIE_RUN_MODE_E     enRunMode;//运行模式
 
-    HI_U32                  u32TmpBufSize; /*temp buffer size*/
+    HI_U32                  u32TmpBufSize; /*temp buffer size*/ //TmpBufSize大小，模型才知道
     HI_U32                  u32NetSegNum; //segment数量
     SVP_NNIE_SEG_S          astSeg[SVP_NNIE_MAX_NET_SEG_NUM]; //nnie上的segment，最大值=8
     SVP_NNIE_ROIPOOL_INFO_S astRoiInfo[SVP_NNIE_MAX_ROI_LAYER_NUM]; /*ROIPooling info*/
