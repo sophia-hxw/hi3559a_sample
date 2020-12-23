@@ -257,14 +257,15 @@ static HI_S32 SvpSampleAllocBlobMemDet(
 {
     HI_S32 s32Ret = HI_SUCCESS;
 
-    SVP_NNIE_MODEL_S* pstModel = &pstComfParam->stModel;
-    SVP_NNIE_SEG_S* astSeg = pstModel->astSeg;
+    SVP_NNIE_MODEL_S* pstModel = &pstComfParam->stModel;//loadModel出来的模型结构体
+    SVP_NNIE_SEG_S* astSeg = pstModel->astSeg;//nnie框架上一个segment的信息
 
     HI_U16 u16SrcNum = astSeg[0].u16SrcNum;
     HI_U16 u16DstNum = astSeg[0].u16DstNum;
     HI_U32 u32Num = SVP_SAMPLE_MIN(pstComfParam->u32TotalImgNum, pstClfCfg->u32MaxInputNum);
 
     // malloc src, dst blob buf
+    //每个segment中src, dst blob的存储
     for (HI_U32 u32SegCnt = 0; u32SegCnt < pstModel->u32NetSegNum; ++u32SegCnt)
     {
         SVP_NNIE_NODE_S* pstSrcNode = (SVP_NNIE_NODE_S*)(astSeg[u32SegCnt].astSrcNode);
@@ -603,7 +604,7 @@ HI_S32 SvpSampleLSTMDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
     return HI_SUCCESS;
 }
 
-//加载模型，申请mmz空间
+//一阶段检测模型初始化，参数：nnie的config参数，一阶段检测网络参数，网络类型
 HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg,
 		SVP_NNIE_ONE_SEG_DET_S *pstComfParam, const HI_U8 netType)
 {
@@ -611,9 +612,9 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg,
 
     // SVP_SAMPLE_MAX_PATH 最长路径名 长度 默认256
     HI_CHAR aszImg[SVP_SAMPLE_MAX_PATH] = { '\0' };
-// 输入节点个数
+    // 输入节点个数初始化
     HI_U16 u16SrcNum = 0;
-    //输出节点个数
+    //输出节点个数初始化
     HI_U16 u16DstNum = 0;
 
     SVP_MEM_INFO_S *pstModelBuf = &pstComfParam->stModelBuf;
@@ -624,14 +625,15 @@ HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg,
     s32Ret = SvpSampleReadWK(pstClfCfg->pszModelName, pstModelBuf);
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "Error(%#x): read model file(%s) failed", s32Ret, pstClfCfg->pszModelName);
 
-    s32Ret = HI_MPI_SVP_NNIE_LoadModel(pstModelBuf, &(pstComfParam->stModel));
+    s32Ret = HI_MPI_SVP_NNIE_LoadModel(pstModelBuf, &(pstComfParam->stModel));//模型信息都有了
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail1, "Error(%#x): LoadModel from %s failed!", s32Ret, pstClfCfg->pszModelName);
 
-    u16SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;
-    u16DstNum = pstComfParam->stModel.astSeg[0].u16DstNum;
+    u16SrcNum = pstComfParam->stModel.astSeg[0].u16SrcNum;// 输入节点个数实际值，从模型处获取
+    u16DstNum = pstComfParam->stModel.astSeg[0].u16DstNum;//输出节点个数实际值，从模型处获取
 
     /******************** step2, malloc tmp_buf *******************************/
     pstComfParam->u32TmpBufSize = pstComfParam->stModel.u32TmpBufSize;
+    //TmpBufSize大小，模型才知道
 
     s32Ret = SvpSampleMallocMem(NULL, NULL, pstComfParam->u32TmpBufSize, pstTmpBuf);
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail2, "Error(%#x): Malloc tmp buf failed!", s32Ret);

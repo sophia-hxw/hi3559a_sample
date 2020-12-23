@@ -1,3 +1,9 @@
+/*
+符号说明：
+[QUES]:待说明或者后续需要反复理解的问题？
+[TODO]:查资料可解决的问题
+[DONE]:已经解决的问题
+*/
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -214,14 +220,21 @@ HI_VOID SvpSampleCloseFile(FILE *fp)
 }
 
 /*
-*mkdir TODO 新建文件夹
+*mkdir TODO 新建文件夹？[DONE]
 */
 HI_S32 SvpSampleMkdir(const HI_CHAR* dir)
 {
+/* 
+函数原型：int _access(const char *pathname, int mode);
+
+参数：pathname 为文件路径或目录路径 mode 为访问权限（在不同系统中可能用不能的宏定义重新定义）
+
+返回值：如果文件具有指定的访问权限，则函数返回0；如果文件不存在或者不能访问指定的权限，则返回-1.
+ */
     HI_S32 ret = _access(dir, 0);
     if (0 != ret)
     {
-        ret = _mkdir(dir);
+        ret = _mkdir(dir);//在头文件<direct.h>中
         if (0 != ret)
         {
             printf("MKDIR failure! ret = %d, dir = %s", ret, dir);

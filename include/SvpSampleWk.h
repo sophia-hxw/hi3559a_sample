@@ -1,3 +1,9 @@
+/*
+符号说明：
+[QUES]:待说明或者后续需要反复理解的问题？
+[TODO]:查资料可解决的问题
+[DONE]:已经解决的问题
+*/
 #ifndef __SVP_SAMPLE_WK_H__
 #define __SVP_SAMPLE_WK_H__
 
@@ -69,7 +75,7 @@ typedef struct hiSVP_WK_PARAM_RUNONCE_S
     SVP_NNIE_FORWARD_WITHBBOX_CTRL_S stBboxCtrl[SVP_NNIE_MAX_NET_SEG_NUM];
 }SVP_WK_PARAM_RUNONECE_S;
 
-//config参数
+//wk文件config参数，可对比nnie框架config参数理解
 typedef struct hiSVP_WK_CFG_S
 {
     const HI_CHAR *pszModelName;//模型名称
@@ -88,7 +94,7 @@ typedef struct hiSVP_SAMPLE_CLF_RES_S
     HI_U32   u32Confidence;
 }SVP_SAMPLE_CLF_RES_S;
 
-//一阶段网络
+//一阶段的通用参数
 typedef struct hiSVP_NNIE_ONE_SEG_S
 {
     HI_U32 u32TotalImgNum;//图片总数
@@ -105,17 +111,19 @@ typedef struct hiSVP_NNIE_ONE_SEG_S
     SVP_MEM_INFO_S      stTskBuf;
     HI_U32 u32TaskBufSize;
 
-    SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];//输入blob
-    SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];//输出blob
+    SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];//输入blob，最大值=16
+    SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];//输出blob，最大值=16
 
     SVP_NNIE_FORWARD_CTRL_S stCtrl;
 
     //memory needed by post-process of getting topN
+    //后处理需要的内存
     SVP_SAMPLE_CLF_RES_S *pstMaxClfIdScore;
     SVP_SAMPLE_CLF_RES_S *pastClfRes[SVP_NNIE_MAX_OUTPUT_NUM];
     HI_U32 au32ClfNum[SVP_NNIE_MAX_OUTPUT_NUM];
 }SVP_NNIE_ONE_SEG_S;
 
+//结果内存头[QUES]？参数：类型和长度
 typedef struct hiSVP_SAMPLE_RESULT_MEM_HEAD_S
 {
     HI_U32 u32Type;
@@ -123,19 +131,20 @@ typedef struct hiSVP_SAMPLE_RESULT_MEM_HEAD_S
     /* HI_U32* pu32Mem; */
 }SVP_SAMPLE_RESULT_MEM_HEAD_S;
 
+//一阶段的检测参数
 typedef struct hiSVP_NNIE_ONE_SEG_DET_S
 {
     HI_U32 u32TotalImgNum;
     FILE *fpSrc[SVP_NNIE_MAX_INPUT_NUM];
     FILE *fpLabel[SVP_NNIE_MAX_OUTPUT_NUM];
 
-    HI_U32 u32ModelBufSize;
+    SVP_MEM_INFO_S      stTmpBuf;
     HI_U32 u32TmpBufSize;
 
-    SVP_NNIE_MODEL_S    stModel;
-    SVP_MEM_INFO_S      stModelBuf;
-    SVP_MEM_INFO_S      stTmpBuf;
-
+    SVP_NNIE_MODEL_S    stModel;//then, load model from ModelBuf to Model
+    SVP_MEM_INFO_S      stModelBuf;//first, wk->ModelBuf
+    HI_U32 u32ModelBufSize;//[QUES]在哪里初始化的？
+    
     SVP_MEM_INFO_S      stTskBuf;
     HI_U32 u32TaskBufSize;
 
@@ -145,21 +154,23 @@ typedef struct hiSVP_NNIE_ONE_SEG_DET_S
     SVP_NNIE_FORWARD_CTRL_S stCtrl;
 
     //memory needed by post-process of getting detection result
+    //后处理需要的内存地址，指针？[QUES]
     HI_S32 *ps32ResultMem;
 }SVP_NNIE_ONE_SEG_DET_S;
 
+//多阶段网络的通用参数
 typedef struct hiSVP_NNIE_MULTI_SEG_S
 {
     HI_U32 u32TotalImgNum;
     FILE *fpSrc[SVP_NNIE_MAX_INPUT_NUM];
     FILE *fpLabel[SVP_NNIE_MAX_OUTPUT_NUM];
 
-    HI_U32 u32ModelBufSize;
+    SVP_MEM_INFO_S      stTmpBuf;
     HI_U32 u32TmpBufSize;
 
     SVP_NNIE_MODEL_S    stModel;
     SVP_MEM_INFO_S      stModelBuf;
-    SVP_MEM_INFO_S      stTmpBuf;
+    HI_U32 u32ModelBufSize;
 
     // those below param is owned by individual segment.
     SVP_MEM_INFO_S      astTskBuf[SVP_NNIE_MAX_NET_SEG_NUM];
@@ -167,33 +178,36 @@ typedef struct hiSVP_NNIE_MULTI_SEG_S
 
     SVP_SRC_BLOB_S astSrc[SVP_NNIE_MAX_INPUT_NUM];
     SVP_DST_BLOB_S astDst[SVP_NNIE_MAX_OUTPUT_NUM];
-    SVP_BLOB_S stRPN[SVP_NNIE_MAX_OUTPUT_NUM];
+    SVP_BLOB_S stRPN[SVP_NNIE_MAX_OUTPUT_NUM];//比一阶段多了哥RPN的blob参数，最大值=16
 
     SVP_NNIE_FORWARD_CTRL_S astCtrl[SVP_NNIE_MAX_NET_SEG_NUM];
     SVP_NNIE_FORWARD_WITHBBOX_CTRL_S astBboxCtrl[SVP_NNIE_MAX_NET_SEG_NUM];
 }SVP_NNIE_MULTI_SEG_S;
 
+//nnie框架config参数，可对比wk的config参数理解
 typedef struct hiSVP_NNIE_CFG_S
 {
     const HI_CHAR *pszModelName;
     const HI_CHAR *paszPicList[SVP_NNIE_MAX_INPUT_NUM];
-    const HI_CHAR *paszLabel[SVP_NNIE_MAX_OUTPUT_NUM];
+    const HI_CHAR *paszLabel[SVP_NNIE_MAX_OUTPUT_NUM];//标签指针，最大值=16
 
     HI_U32 u32MaxInputNum;
     HI_U32 u32MaxBboxNum;
 
     HI_U32 u32TopN;
-    HI_BOOL bNeedLabel;
+    HI_BOOL bNeedLabel;//是否需要标签
 }SVP_NNIE_CFG_S;
 
+//nnie框架的node信息
 typedef struct hiSVP_NNIE_NODE_INFO
 {
-    HI_CHAR layerName[SVP_NNIE_NODE_NAME_LEN];
-    HI_U32 segID;
-    HI_U32 layerID;
-    HI_U32 dstIdx;
+    HI_CHAR layerName[SVP_NNIE_NODE_NAME_LEN];//层名称，名字长度最大值=32
+    HI_U32 segID;//段id
+    HI_U32 layerID;//层id
+    HI_U32 dstIdx;//输出index
 }SVP_NNIE_NODE_INFO;
 
+//分类网络类型，共7种
 typedef enum hiSVP_SAMPLE_WK_CLF_NET_TYPE_E
 {
     SVP_SAMPLE_WK_CLF_NET_LENET         = 0x0,  /*LeNet*/
@@ -207,6 +221,7 @@ typedef enum hiSVP_SAMPLE_WK_CLF_NET_TYPE_E
     SVP_SAMPLE_WK_CLF_NET_TYPE_BUTT
 }SVP_SAMPLE_WK_CLF_NET_TYPE_E;
 
+//检测网络类型，共4种
 typedef enum hiSVP_SAMPLE_WK_DETECT_NET_TYPE_E
 {
     SVP_SAMPLE_WK_DETECT_NET_YOLOV1   =  0x0,  /*Yolov1*/
@@ -217,6 +232,7 @@ typedef enum hiSVP_SAMPLE_WK_DETECT_NET_TYPE_E
     SVP_SAMPLE_WK_DETECT_NET_TYPE_BUTT
 }SVP_SAMPLE_WK_DETECT_NET_TYPE_E;
 
+//faster-rcnn网络类型，不同的backbone
 typedef enum hiSVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E
 {
     SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_ALEX   =  0x0,  /*fasterrcnn_alexnet*/
@@ -229,6 +245,7 @@ typedef enum hiSVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E
     SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_BUTT
 }SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E;
 
+//RFCN网络类型
 typedef enum hiSVP_SAMPLE_WK_DETECT_NET_RFCN_TYPE_E
 {
     SVP_SAMPLE_WK_DETECT_NET_RFCN_RES50   =  0x0,
@@ -236,6 +253,7 @@ typedef enum hiSVP_SAMPLE_WK_DETECT_NET_RFCN_TYPE_E
     SVP_SAMPLE_WK_DETECT_NET_RFCN_TYPE_BUTT
 }SVP_SAMPLE_WK_DETECT_NET_RFCN_TYPE_E;
 
+//LSTM运行时ctx
 typedef struct _LSTMRunTimeCtx
 {
     HI_U32 *pu32Seqs;
@@ -272,6 +290,7 @@ HI_S32 SvpSampleMultiSegCnnInit(SVP_NNIE_CFG_S *pstComCfg, SVP_NNIE_MULTI_SEG_S 
 void SvpSampleMultiSegCnnDeinit(SVP_NNIE_MULTI_SEG_S *pstComParam);
 
 /* One-Segment detection relative functions */
+//一段检测函数，模型infer都在nnie框架上
 HI_S32 SvpSampleCnnDetectionOneSeg(const HI_CHAR *pszModelName, const HI_CHAR *paszPicList[], const HI_U8 netType, HI_S32 s32Cnt = 1);
 
 HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNIE_CFG_S *pstDetCfg);

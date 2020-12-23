@@ -136,7 +136,7 @@ HI_S32 SvpSampleMalloc_Cached(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U64 *pu64Phy
 HI_S32 SvpSampleMallocMemCached(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U32 u32Size, SVP_MEM_INFO_S *pstMem);
 
 /*
-* Flush cache, if u32PhyAddr==0£¬that means flush all cache
+* Flush cache, if u32PhyAddr==0, that means flush all cache
 */
 HI_S32 SvpSampleFlushCache(HI_U64 u64PhyAddr, HI_VOID *pvVirAddr, HI_U32 u32Size);
 HI_S32 SvpSampleFlushMemCache(SVP_MEM_INFO_S *pstMem);

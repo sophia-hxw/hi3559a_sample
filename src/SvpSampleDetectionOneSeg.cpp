@@ -1,3 +1,9 @@
+/*
+符号说明：
+[QUES]:待说明或者后续需要反复理解的问题？
+[TODO]:查资料可解决的问题
+[DONE]:已经解决的问题
+*/
 #include "SvpSampleWk.h"
 #include "SvpSampleCom.h"
 
@@ -10,12 +16,24 @@
 #include "cv_draw_rect.h"
 #endif
 
+//测试图片列表，顺序与SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E相同
 const HI_CHAR *g_paszPicList_d[][SVP_NNIE_MAX_INPUT_NUM] = {
     { "../../data/detection/yolov1/image_test_list.txt" },
     { "../../data/detection/yolog_paszPicList_dv2/image_test_list.txt" },
     { "../../data/detection/yolov3/image_test_list.txt" },
     { "../../data/detection/ssd/image_test_list.txt"    }
 };
+
+/* the order is same with SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E*/
+//模型名称，顺序与SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E相同
+const HI_CHAR *g_paszModelType_d[] = {
+    "SVP_SAMPLE_YOLO_V1",
+    "SVP_SAMPLE_YOLO_V2",
+    "SVP_SAMPLE_YOLO_V3",
+    "SVP_SAMPLE_SSD",
+    "SVP_SAMPLE_DET_UNKNOWN",
+};
+
 
 #ifndef USE_FUNC_SIM /* inst wk */
 const HI_CHAR *g_paszModelName_d[] = {
@@ -28,35 +46,28 @@ const HI_CHAR *g_paszModelName_d[] = {
 const HI_CHAR *g_paszModelName_d[] = {
     "../../data/detection/yolov1/inst/inst_yolov1_func.wk",
     "../../data/detection/yolov2/inst/inst_yolov2_func.wk",
-   // "../../data/detection/yolov3/inst/inst_yolov3_func.wk",
+    "../../data/detection/yolov3/inst/inst_yolov3_func.wk",
 	"../../data/detection/yolov3/inst/yolov3_func_test.wk",
     "../../data/detection/ssd/inst/inst_ssd_func.wk"
 };
 #endif
 
-/* the order is same with SVP_SAMPLE_WK_DETECT_NET_FASTER_RCNN_TYPE_E*/
-const HI_CHAR *g_paszModelType_d[] = {
-    "SVP_SAMPLE_YOLO_V1",
-    "SVP_SAMPLE_YOLO_V2",
-    "SVP_SAMPLE_YOLO_V3",
-    "SVP_SAMPLE_SSD",
-    "SVP_SAMPLE_DET_UNKNOWN",
-};
 
+//一次前传？
 HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNIE_CFG_S *pstDetCfg)
 {
     HI_S32 s32Ret = HI_SUCCESS;
 
     // 任务句柄，标识不同的任务
-    SVP_NNIE_HANDLE SvpNnieHandle = 0;
-    SVP_NNIE_ID_E enNnieId = SVP_NNIE_ID_0;
+    SVP_NNIE_HANDLE SvpNnieHandle = 0;//typedef HI_S32 SVP_NNIE_HANDLE
+    SVP_NNIE_ID_E enNnieId = SVP_NNIE_ID_0;//框架ID，类似硬件编号
 
     // 返回结果的标志 bInstant
     HI_BOOL bInstant = HI_TRUE;
     HI_BOOL bFinish  = HI_FALSE;
     HI_BOOL bBlock   = HI_TRUE;
 
-    // 多节点输入输出的CNN类型网络预测
+    // 多节点输入输出的CNN类型网络预测，参数：框架句柄，输入输出blob数组，model结构体，框架结构体stCtrl，运行结果标志
     s32Ret = HI_MPI_SVP_NNIE_Forward(&SvpNnieHandle, pstDetParam->astSrc, &pstDetParam->stModel,
         pstDetParam->astDst, &pstDetParam->stCtrl, bInstant);
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "Error(%#x): CNN_Forward failed!", s32Ret);
@@ -254,7 +265,7 @@ static HI_S32* s_SvpSampleDetOneSegGetResultMem(HI_U8 netType, SVP_NNIE_SSD_S *p
 
 
 
-// 这里做一些解释性的东西
+// 一个segment检测模型，参数：模型名称，图片list，网络类型，默认参数s32Cnt=1
 HI_S32 SvpSampleCnnDetectionOneSeg(
 		const HI_CHAR *pszModelName,
 		const HI_CHAR *paszPicList[],
@@ -264,7 +275,7 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
 
     /**************************************************************************/
     /* 1. check input para */
-	// // TRACE宏只有在调试状态下才有所输出，所以只对Debug 版本的工程产生作用，
+	// TRACE宏只有在调试状态下才有所输出，所以只对Debug 版本的工程产生作用，
 	// 而在Release 版本的工程中，TRACE宏将被忽略
 	// 返回 HI_ERR_SVP_NNIE_NULL_PTR
     CHECK_EXP_RET(NULL == pszModelName, HI_ERR_SVP_NNIE_NULL_PTR, "Error(%#x): %s input pszModelName nullptr error!", HI_ERR_SVP_NNIE_NULL_PTR, __FUNCTION__);
@@ -278,13 +289,14 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
     /* 2. declare definitions */
     HI_S32 s32Ret = HI_SUCCESS;
 
-    // 这里的num含义是啥？
-    HI_U32 u32MaxInputNum = SVP_NNIE_MAX_INPUT_NUM;
+    // 这里的num含义是啥？[DONE]
+    HI_U32 u32MaxInputNum = SVP_NNIE_MAX_INPUT_NUM;//16，hi_nnie.h
     HI_U32 u32Batch   = 0;
     HI_U32 u32LoopCnt = 0;
     HI_U32 u32StartId = 0;
 
-    // TODO 名字结构体  参数的含义，区别是啥
+    // TODO 名字结构体  参数的含义，区别是啥? [DONE]
+    // 从模型wk文件，网络结构和硬件参数三个维度理解
     SVP_NNIE_ONE_SEG_DET_S stDetParam = { 0 };
     SVP_NNIE_CFG_S stDetCfg = { 0 };
 
@@ -296,12 +308,13 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
     string strResultFolderDir = "result_" + strNetType + "/";
     s32Ret = SvpSampleMkdir(strResultFolderDir.c_str());
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "SvpSampleMkdir(%s) failed", strResultFolderDir.c_str());
-    stDetCfg.pszModelName = pszModelName;
+    stDetCfg.pszModelName = pszModelName;//const HI_CHAR *pszModelName;
 
-    //它的功能是从src的开始位置拷贝n个字节的数据到dest。
-    // dest,src,n 如果dest存在数据，将会被覆盖
+    //把paszPicList拷贝到&stDetCfg.paszPicList
+    // void	*memcpy(void *__dst, const void *__src, size_t __n) 如果dst存在数据，将会被覆盖
+    // paszPicList = "../../data/detection/yolov3/image_test_list.txt"
     memcpy(&stDetCfg.paszPicList, paszPicList, sizeof(HI_VOID*)*s32Cnt);
-    stDetCfg.u32MaxInputNum = u32MaxInputNum; //max input image num in each batch
+    stDetCfg.u32MaxInputNum = u32MaxInputNum; //16，hi_nnie.h
     stDetCfg.u32MaxBboxNum = 0;
 
     //加载模型，申请mmz空间
@@ -413,15 +426,17 @@ void SvpSampleCnnDetYoloV2()
 void SvpSampleCnnDetYoloV3()
 {
     printf("%s start ...\n", __FUNCTION__);
+    HI_U8 net_name = SVP_SAMPLE_WK_DETECT_NET_YOLOV3
     SvpSampleCnnDetectionOneSeg(
-    		// 模型名字与路径
-        g_paszModelName_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
-        	// 图片路径
-		g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
+        // 模型名字与路径
+        // g_paszModelName_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
+        // 图片路径
+        // g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
 
-        SVP_SAMPLE_WK_DETECT_NET_YOLOV3);
+        // SVP_SAMPLE_WK_DETECT_NET_YOLOV3
+        g_paszModelName_d[net_name], g_paszPicList_d[net_name], net_name);
     printf("%s end ...\n\n", __FUNCTION__);
-    fflush(stdout);
+    fflush(stdout);//[TODO]理解fflush作用？
 }
 
 void SvpSampleCnnDetSSD()

@@ -7,6 +7,7 @@
 
 #include "yolo_interface.h"
 
+//
 #define SVP_SAMPLE_YOLOV3_SCORE_FILTER_THREASH     (0.5f)
 #define SVP_SAMPLE_YOLOV3_NMS_THREASH              (0.45f)
 
@@ -235,11 +236,11 @@ void SvpSampleWkYoloV3GetResult(SVP_BLOB_S *pstDstBlob, HI_S32 *ps32ResultMem, S
         for (HI_U32 u32resBlobIdx = 0; u32resBlobIdx < SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM; u32resBlobIdx++)
         {
             SVP_BLOB_S* pstTempBlob = &pstDstBlob[u32resBlobIdx];
-            // pstTempBlob->u32StrideÊÇnnieÊä³öµÄfeatureµÄÃ¿ÐÐÕæÕýµÄ×Ö½ÚÊý£¬
-            // u32OneCSizeÊÇnnieÊä³öµÄfeatureµÄÃ¿¸öchannelÕæÕýµÄ×Ö½ÚÊý
+            // pstTempBlob->u32Strideï¿½ï¿½nnieï¿½ï¿½ï¿½ï¿½ï¿½featureï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½ï¿½ï¿½
+            // u32OneCSizeï¿½ï¿½nnieï¿½ï¿½ï¿½ï¿½ï¿½featureï¿½ï¿½Ã¿ï¿½ï¿½channelï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½
             HI_U32 u32OneCSize = pstTempBlob->u32Stride * pstTempBlob->unShape.stWhc.u32Height;
             HI_U32 u32FrameStride = u32OneCSize * pstTempBlob->unShape.stWhc.u32Chn;
-            // ·ÃÎÊµÚc¸öÍ¨µÀµÚhÐÐµÚwÁÐµÄÔªËØ
+            // ï¿½ï¿½ï¿½Êµï¿½cï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½hï¿½Ðµï¿½wï¿½Ðµï¿½Ôªï¿½ï¿½
             HI_U8* pu8InputData = (HI_U8*)pstTempBlob->u64VirAddr + u32NumIndex * u32FrameStride;
 
             if (HI_NULL != pstHead)
