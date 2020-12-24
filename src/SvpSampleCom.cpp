@@ -374,7 +374,6 @@ HI_S32 SvpSampleMallocBlob(SVP_BLOB_S *pstBlob, SVP_BLOB_TYPE_E enType, HI_U32 u
 }
 
 
-//
 HI_S32 SvpSampleMallocSeqBlob(SVP_BLOB_S *pstBlob, SVP_BLOB_TYPE_E enType, HI_U32 u32Num, HI_U32 u32Dim, SVP_SAMPLE_LSTMRunTimeCtx *pstCtx)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -410,11 +409,14 @@ HI_S32 SvpSampleMallocSeqBlob(SVP_BLOB_S *pstBlob, SVP_BLOB_TYPE_E enType, HI_U3
     return s32Ret;
 }
 
+
+//释放blob占用的内存，参数：blob结构体
 HI_VOID SvpSampleFreeBlob(SVP_BLOB_S *pstBlob)
 {
     SvpSampleFree((pstBlob->u64PhyAddr), (HI_VOID*)(pstBlob->u64VirAddr));
     memset(pstBlob, 0, sizeof(*pstBlob));
 }
+
 
 HI_S32 SvpSampleMallocRPNBlob(SVP_BLOB_S *pstBlob, HI_U32 u32Size, HI_U32 u32UsrStride)
 {
@@ -443,14 +445,16 @@ void SvpSampleFreeRPNBlob(SVP_BLOB_S *pstBlob)
     memset(pstBlob, 0, sizeof(*pstBlob));
 }
 
+
+//将图片文件读入blob数组，参数：文件指针数组，SrcBlob数组，输入数据条数，图片名称后缀
 HI_S32 SvpSampleReadAllSrcImg(FILE *afp[], SVP_SRC_BLOB_S astSrcBlobs[],
     HI_U32 u32SrcNum, vector<SVP_SAMPLE_FILE_NAME_PAIR>& imgNameRecoder)
 {
     HI_S32 s32Ret = HI_SUCCESS;
 
-    imgNameRecoder.clear();
+    imgNameRecoder.clear();//清空容器imgNameRecoder
 
-    for (HI_U32 j = 0; j < u32SrcNum; j++)
+    for (HI_U32 j = 0; j < u32SrcNum; j++)//输入图片数量
     {
         vector<SVP_SAMPLE_FILE_NAME_PAIR> imgNameRecoder_temp;
 
@@ -530,6 +534,8 @@ static HI_S32 s_SvpSampleImgPathRead(FILE *fp, HI_CHAR* pszImg)
     return ret;
 }
 
+
+//
 HI_S32 SvpSampleImgReadFromImglist(FILE *fp, SVP_BLOB_S *pstBlob,
     HI_U32 u32StartLine, vector<SVP_SAMPLE_FILE_NAME_PAIR>& imgNameRecoder)
 {
