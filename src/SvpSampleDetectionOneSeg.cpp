@@ -266,6 +266,14 @@ static HI_S32* s_SvpSampleDetOneSegGetResultMem(HI_U8 netType, SVP_NNIE_SSD_S *p
 
 
 // 一个segment检测模型，参数：模型名称，图片list，网络类型，默认参数s32Cnt=1
+/*
+主要步骤：
+#1，参数合法性检查，包含模型名称，图片列表；
+#2，各种参数和输出文件夹等；
+#3，内存初始化SvpSampleOneSegDetCnnInit；
+#4，按batch做infer，最后一个不足batch按一个batch；
+#5，拿到检测结果，print出来；
+*/
 HI_S32 SvpSampleCnnDetectionOneSeg(
 		const HI_CHAR *pszModelName,
 		const HI_CHAR *paszPicList[],

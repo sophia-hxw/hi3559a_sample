@@ -214,14 +214,15 @@ typedef struct hiSVP_NNIE_MODEL_S
     SVP_MEM_INFO_S          stBase;//内存信息？[QUES]
 }SVP_NNIE_MODEL_S;
 
+//nnie前传的参数信息
 typedef struct hiSVP_NNIE_FORWARD_CTRL_S
 {
-    HI_U32              u32SrcNum;      /* input node num, [1, 16] */
-    HI_U32              u32DstNum;      /* output node num, [1, 16]*/
-    HI_U32              u32NetSegId;    /* net segment index running on NNIE */
-    SVP_NNIE_ID_E       enNnieId;       /* device target which running the seg*/
-    SVP_MEM_INFO_S      stTmpBuf;       /* auxiliary temp mem */
-    SVP_MEM_INFO_S      stTskBuf;       /* auxiliary task mem */
+    HI_U32              u32SrcNum;      /* 输入节点数量input node num, [1, 16] */
+    HI_U32              u32DstNum;      /* 输出节点数量output node num, [1, 16]*/
+    HI_U32              u32NetSegId;    /* 网络segment的ID  net segment index running on NNIE */
+    SVP_NNIE_ID_E       enNnieId;       /* nnie的硬件ID device target which running the seg*/
+    SVP_MEM_INFO_S      stTmpBuf;       /* TmpBuf的内存信息  auxiliary temp mem */
+    SVP_MEM_INFO_S      stTskBuf;       /* TskBuf的内存信息  auxiliary task mem */
 }SVP_NNIE_FORWARD_CTRL_S;
 
 typedef struct hiSVP_NNIE_FORWARD_WITHBBOX_CTRL_S

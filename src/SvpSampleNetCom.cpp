@@ -1,3 +1,9 @@
+/*
+符号说明：
+[QUES]:待说明或者后续需要反复理解的问题？
+[TODO]:查资料可解决的问题
+[DONE]:已经解决的问题
+*/
 #include <fstream>
 
 #include "SvpSampleWk.h"
@@ -605,6 +611,16 @@ HI_S32 SvpSampleLSTMDeinit(SVP_NNIE_ONE_SEG_S *pstComParam)
 }
 
 //一阶段检测模型初始化，参数：nnie的config参数，一阶段检测网络参数，网络类型
+/*
+主要步骤：
+#1，读wk文件到ModelBuf的内存区；
+#2，从ModelBuf的内存区loadModel到nnie框架，同时初始化一堆参数，[QUES]？尝试理解都有哪些参数；
+#3，TmpBuf内存大小计算和内存分配；
+#4，TskBuf内存大小计算和内存分配；
+#5，读测试图片集ImgList；
+#6，将ImgList上的图片加载到Blob中，顺便搞定输出Blob;
+#7，复制nnie上forward需要的部分参数信息；
+*/
 HI_S32 SvpSampleOneSegDetCnnInit(SVP_NNIE_CFG_S *pstClfCfg,
 		SVP_NNIE_ONE_SEG_DET_S *pstComfParam, const HI_U8 netType)
 {
