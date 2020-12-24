@@ -13,6 +13,7 @@
 
 using namespace std;
 
+//
 HI_S32 SvpSampleReadWK(const HI_CHAR *pszModelName, SVP_MEM_INFO_S *pstModelBuf)
 {
     HI_S32 s32Ret = HI_FAILURE;
@@ -36,6 +37,7 @@ HI_S32 SvpSampleReadWK(const HI_CHAR *pszModelName, SVP_MEM_INFO_S *pstModelBuf)
     // 文件的开头
     fseek(pfModel, 0, SEEK_SET);
 
+    //pstModelBuf：物理地址，虚拟地址，长度
     s32Ret = SvpSampleMallocMem(NULL, NULL, pstModelBuf->u32Size, pstModelBuf);
     CHECK_EXP_GOTO(HI_SUCCESS != s32Ret, Fail, "Error(%#x): Malloc model buf failed!", s32Ret);
 

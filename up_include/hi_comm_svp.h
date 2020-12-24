@@ -27,6 +27,7 @@ extern "C"{
 #include "hi_errno.h"
 
 /*Blob type*/
+//blob种类，六类
 typedef enum hiSVP_BLOB_TYPE_E
 {
     SVP_BLOB_TYPE_S32       =  0x0,
@@ -87,6 +88,7 @@ typedef SVP_BLOB_S  SVP_SRC_BLOB_S;
 typedef SVP_BLOB_S  SVP_DST_BLOB_S;
 
 /*Mem information*/
+//内存信息，物理地址，虚拟地址，大小
 typedef struct hiSVP_MEM_INFO_S
 {
     HI_U64  u64PhyAddr; /* RW;The physical address of the memory */

@@ -22,14 +22,17 @@
 #include "mpi_sys.h"
 #endif
 
+//内存大小对齐，能保证返回的内存大小是u32AlignNum的整数倍且是大于u32Size的最小值。参数：内存大小，对齐数量
 HI_U32 SvpSampleAlign(HI_U32 u32Size, HI_U32 u32AlignNum)
 {
     return (u32Size + (u32AlignNum - u32Size%u32AlignNum)%u32AlignNum);
 }
 
+
 /*
 * Malloc mem,depend on different environment
 */
+//分配内存，参数：不懂指针1，不懂指针2，物理地址，虚拟地址，内存大小 [QUES]
 HI_S32 SvpSampleMalloc(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U64 *pu64PhyAddr, HI_VOID **ppvVirAddr, HI_U32 u32Size)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -52,6 +55,8 @@ HI_S32 SvpSampleMalloc(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U64 *pu64PhyAddr, H
     return s32Ret;
 }
 
+
+//分配内存，参数：不懂指针1，不懂指针2，内存大小，内存结构体(物理地址，虚拟地址，内存大小)[QUES]
 HI_S32 SvpSampleMallocMem(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U32 u32Size, SVP_MEM_INFO_S *pstMem)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -61,7 +66,7 @@ HI_S32 SvpSampleMallocMem(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U32 u32Size, SVP
     pstMem->u32Size = u32Size;
 #else
     // 该函数返回一个指针 ，指向已分配大小的内存。如果请求失败，则返回 NULL。
-    pstMem->u64VirAddr = (HI_U64)malloc(u32Size);
+    pstMem->u64VirAddr = (HI_U64)malloc(u32Size);//虚拟地址
     if(0 == pstMem->u64VirAddr)
     {
         s32Ret = HI_FAILURE;
@@ -70,16 +75,18 @@ HI_S32 SvpSampleMallocMem(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U32 u32Size, SVP
     }
     else
     {
-        pstMem->u64PhyAddr = pstMem->u64VirAddr;
-        pstMem->u32Size    = u32Size;
+        pstMem->u64PhyAddr = pstMem->u64VirAddr;//物理地址
+        pstMem->u32Size    = u32Size;//大小
     }
 #endif
     return s32Ret;
 }
 
+
 /*
 * Malloc mem with cache,depend on different environment
 */
+//分配内存缓存，参数：不懂指针1，不懂指针2，物理地址，虚拟地址，内存大小 [QUES]
 HI_S32 SvpSampleMalloc_Cached(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U64 *pu64PhyAddr, HI_VOID **ppvVirAddr, HI_U32 u32Size)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -100,6 +107,8 @@ HI_S32 SvpSampleMalloc_Cached(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U64 *pu64Phy
     return s32Ret;
 }
 
+
+//分配内存缓存，参数：不懂指针1，不懂指针2，内存大小，内存结构体(物理地址，虚拟地址，内存大小)[QUES]
 HI_S32 SvpSampleMallocMemCached(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U32 u32Size, SVP_MEM_INFO_S *pstMem)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -124,9 +133,11 @@ HI_S32 SvpSampleMallocMemCached(HI_CHAR *pchMmb, HI_CHAR *pchZone, HI_U32 u32Siz
     return s32Ret;
 }
 
+
 /*
- * Flush cache, if u32PhyAddr==0拢卢that means flush all cache
+ * Flush cache, if u32PhyAddr==0 that means flush all cache
 */
+//清理cache存储，参数：物理地址，虚拟地址，内存大小
 HI_S32 SvpSampleFlushCache(HI_U64 u64PhyAddr, HI_VOID *pvVirAddr, HI_U32 u32Size)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -137,6 +148,8 @@ HI_S32 SvpSampleFlushCache(HI_U64 u64PhyAddr, HI_VOID *pvVirAddr, HI_U32 u32Size
     return s32Ret;
 }
 
+
+//清理cache存储，参数：内存结构体(物理地址，虚拟地址，内存大小)
 HI_S32 SvpSampleFlushMemCache(SVP_MEM_INFO_S *pstMem)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -147,9 +160,11 @@ HI_S32 SvpSampleFlushMemCache(SVP_MEM_INFO_S *pstMem)
     return s32Ret;
 }
 
+
 /*
 * Free mem,depend on different environment
 */
+//内存释放，参数：物理地址，虚拟地址
 HI_VOID SvpSampleFree(HI_U64 u64PhyAddr, HI_VOID *pvVirAddr)
 {
 #if ((defined __arm__) || (defined __aarch64__)) && defined HISI_CHIP
@@ -166,6 +181,8 @@ HI_VOID SvpSampleFree(HI_U64 u64PhyAddr, HI_VOID *pvVirAddr)
 #endif
 }
 
+
+//内存释放，参数：内存结构体(物理地址，虚拟地址，内存大小)
 HI_VOID SvpSampleMemFree(SVP_MEM_INFO_S *pstMem)
 {
 #if ((defined __arm__) || (defined __aarch64__)) && defined HISI_CHIP
@@ -183,6 +200,8 @@ HI_VOID SvpSampleMemFree(SVP_MEM_INFO_S *pstMem)
 #endif
 }
 
+
+//内存释放，参数：void指针
 HI_VOID SvpSampleMemFree(void *pMem)
 {
     if (pMem) {
@@ -190,9 +209,11 @@ HI_VOID SvpSampleMemFree(void *pMem)
     }
 }
 
+
 /*
 *Open file,depend on different environment
 */
+//打开文件，参数：文件名称，打开模式
 FILE* SvpSampleOpenFile(const HI_CHAR *pchFileName, const HI_CHAR *pchMode)
 {
     FILE *fp = NULL;
@@ -209,9 +230,11 @@ FILE* SvpSampleOpenFile(const HI_CHAR *pchFileName, const HI_CHAR *pchMode)
     return fp;
 }
 
+
 /*
 *Close file
 */
+//关闭文件，参数：文件指针
 HI_VOID SvpSampleCloseFile(FILE *fp)
 {
     if (fp) {
@@ -219,9 +242,11 @@ HI_VOID SvpSampleCloseFile(FILE *fp)
     }
 }
 
+
 /*
 *mkdir TODO 新建文件夹？[DONE]
 */
+//新建文件或目录，参数：路径/文件名
 HI_S32 SvpSampleMkdir(const HI_CHAR* dir)
 {
 /* 
@@ -244,6 +269,8 @@ HI_S32 SvpSampleMkdir(const HI_CHAR* dir)
     return ret;
 }
 
+
+//计算blob的内存大小并分配内存，参数：blob结构体，blob类型，N,C,W,H，最后的Align是干嘛？[QUES] 对齐参数=16[DONE]
 HI_S32 SvpSampleMallocBlob(SVP_BLOB_S *pstBlob, SVP_BLOB_TYPE_E enType, HI_U32 u32Num, HI_U32 u32Chn,
     HI_U32 u32Width, HI_U32 u32Height, HI_U32 u32UsrAlign)
 {
@@ -256,21 +283,22 @@ HI_S32 SvpSampleMallocBlob(SVP_BLOB_S *pstBlob, SVP_BLOB_TYPE_E enType, HI_U32 u
     CHECK_EXP_RET(u32Width == 0, HI_ERR_SVP_NNIE_ILLEGAL_PARAM, "u32Width(%d) must be greater than 0", u32Width);
     CHECK_EXP_RET(u32Height == 0, HI_ERR_SVP_NNIE_ILLEGAL_PARAM, "u32Height(%d) must be greater than 0", u32Height);
 
-    pstBlob->enType = enType;
-    pstBlob->u32Num = u32Num;
+    pstBlob->enType = enType;//初始化pstBlob中的blob类型，共六类
+    pstBlob->u32Num = u32Num;//初始化pstBlob中的N数量
 
+    //每种case都类似
     switch(enType)
     {
     case SVP_BLOB_TYPE_S32:
     {
         CHECK_EXP_RET(u32Chn == 0, HI_ERR_SVP_NNIE_ILLEGAL_PARAM, "u32Chn(%d) must be greater than 0", u32Chn);
-        pstBlob->unShape.stWhc.u32Chn = u32Chn;
-        pstBlob->unShape.stWhc.u32Height = u32Height;
-        pstBlob->unShape.stWhc.u32Width = u32Width;
+        pstBlob->unShape.stWhc.u32Chn = u32Chn;//初始化pstBlob中的channel
+        pstBlob->unShape.stWhc.u32Height = u32Height;//初始化pstBlob中的height
+        pstBlob->unShape.stWhc.u32Width = u32Width;//初始化pstBlob中的width
         u32ElemByte = sizeof(HI_S32); // SQ20.12
         u32Stride = SvpSampleAlign(u32Width * u32ElemByte, u32UsrAlign);
-        pstBlob->u32Stride = u32Stride;
-        u32Size = u32Num * u32Chn * u32Stride * u32Height;
+        pstBlob->u32Stride = u32Stride;//初始化pstBlob中的stride，对齐后的一行所占的内存大小
+        u32Size = u32Num * u32Chn * u32Stride * u32Height;//一个blob的实际大小
         break;
     }
     case SVP_BLOB_TYPE_U8:
@@ -345,6 +373,8 @@ HI_S32 SvpSampleMallocBlob(SVP_BLOB_S *pstBlob, SVP_BLOB_TYPE_E enType, HI_U32 u
     return s32Ret;
 }
 
+
+//
 HI_S32 SvpSampleMallocSeqBlob(SVP_BLOB_S *pstBlob, SVP_BLOB_TYPE_E enType, HI_U32 u32Num, HI_U32 u32Dim, SVP_SAMPLE_LSTMRunTimeCtx *pstCtx)
 {
     HI_S32 s32Ret = HI_SUCCESS;
