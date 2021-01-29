@@ -500,6 +500,7 @@ static HI_S32 s_SvpSampleImgPathRead(FILE *fp, HI_CHAR* pszImg)
     return ret;
 }
 
+//处理输入函数（读图），貌似并没有前处理？
 HI_S32 SvpSampleImgReadFromImglist(FILE *fp, SVP_BLOB_S *pstBlob,
     HI_U32 u32StartLine, vector<SVP_SAMPLE_FILE_NAME_PAIR>& imgNameRecoder)
 {

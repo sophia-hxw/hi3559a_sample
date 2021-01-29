@@ -54,7 +54,7 @@ void SvpSampleWkYoloV2GetResult(SVP_BLOB_S *pstDstBlob, HI_S32 *ps32ResultMem,
 #define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106         (52)
 #define SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM          (3) //3¸öÏÈÑé¿ò
 #define SVP_SAMPLE_YOLOV3_CHANNLENUM               (255)
-#define SVP_SAMPLE_YOLOV3_PARAMNUM                 (85)
+#define SVP_SAMPLE_YOLOV3_PARAMNUM                 (85)//£¿
 #define SVP_SAMPLE_YOLOV3_BOXNUM                   (3)
 #define SVP_SAMPLE_YOLOV3_CLASSNUM                 (80)
 #define SVP_SAMPLE_YOLOV3_MAX_BOX_NUM              (10)

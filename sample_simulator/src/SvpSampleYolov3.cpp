@@ -17,6 +17,7 @@ static HI_DOUBLE s_SvpSampleYoloV3Bias[SVP_SAMPLE_YOLOV3_SCALE_TYPE_MAX][6] = {
     {10,13, 16,30, 33,23}
 };
 
+//三个输出层，每个层的大小在头文件中定义
 HI_U32 SvpSampleWkYoloV3GetGridNum(SVP_SAMPLE_YOLOV3_SCALE_TYPE_E enScaleType)
 {
     switch (enScaleType)
@@ -44,22 +45,30 @@ HI_U32 SvpSampleWkYoloV3GetBoxTotleNum(SVP_SAMPLE_YOLOV3_SCALE_TYPE_E enScaleTyp
     case CONV_94:
         return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_94 * SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_94 * SVP_SAMPLE_YOLOV3_BOXNUM;
     case CONV_106:
-        return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106 * SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_82 * SVP_SAMPLE_YOLOV3_BOXNUM;
+        return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106 * SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106 * SVP_SAMPLE_YOLOV3_BOXNUM;
     default:
         return 0;
     }
 }
 
+//获取结果内存大小=输入+缓存bbox大小+结果bbox大小
 HI_U32 SvpSampleGetYolov3ResultMemSize(SVP_SAMPLE_YOLOV3_SCALE_TYPE_E enScaleType)
 {
+    //CONV_82 = 13
+    //CONV_94 = 26
+    //CONV_106 = 52
     HI_U32 u32GridNum = SvpSampleWkYoloV3GetGridNum(enScaleType);
+    //inputdate_size这个是干嘛的
     HI_U32 inputdate_size = u32GridNum * u32GridNum * SVP_SAMPLE_YOLOV3_CHANNLENUM * sizeof(HI_FLOAT);
+    //u32TmpBoxSize这个是干嘛的
     HI_U32 u32TmpBoxSize = u32GridNum * u32GridNum * SVP_SAMPLE_YOLOV3_CHANNLENUM * sizeof(HI_U32);
     HI_U32 u32BoxSize = u32GridNum * u32GridNum * SVP_SAMPLE_YOLOV3_BOXNUM * SVP_SAMPLE_YOLOV3_CLASSNUM * sizeof(SVP_SAMPLE_BOX_S);
     return (inputdate_size + u32TmpBoxSize + u32BoxSize);
 
 }
 
+
+//从内存处将结果保存到相应的结构体中，诸如bbox, score等
 void SvpSampleWkYoloV3GetResultForOneBlob(SVP_BLOB_S *pstDstBlob,
                                             HI_U8* pu8InputData,
                                             SVP_SAMPLE_YOLOV3_SCALE_TYPE_E enScaleType,
@@ -68,24 +77,20 @@ void SvpSampleWkYoloV3GetResultForOneBlob(SVP_BLOB_S *pstDstBlob,
                                             HI_U32 *pu32BoxNum)
 {
     // result calc para config
-    HI_FLOAT f32ScoreFilterThresh = SVP_SAMPLE_YOLOV3_SCORE_FILTER_THREASH;
+    HI_FLOAT f32ScoreFilterThresh = SVP_SAMPLE_YOLOV3_SCORE_FILTER_THREASH;//SVP_SAMPLE_YOLOV3_SCORE_FILTER_THREASH = 0.5f
 
-    HI_U32 u32GridNum = SvpSampleWkYoloV3GetGridNum(enScaleType);
-    HI_U32 u32CStep = u32GridNum * u32GridNum;
+    HI_U32 u32GridNum = SvpSampleWkYoloV3GetGridNum(enScaleType);//输出层的w(=h)
+    HI_U32 u32CStep = u32GridNum * u32GridNum;//eg, 19*19
     HI_U32 u32HStep = u32GridNum;
 
-    HI_U32 inputdate_size = u32GridNum * u32GridNum * SVP_SAMPLE_YOLOV3_CHANNLENUM;
-    HI_U32 u32TmpBoxSize = u32GridNum * u32GridNum * SVP_SAMPLE_YOLOV3_CHANNLENUM;
+    HI_U32 inputdate_size = u32GridNum * u32GridNum * SVP_SAMPLE_YOLOV3_CHANNLENUM;//SVP_SAMPLE_YOLOV3_CHANNLENUM = 255
+    HI_U32 u32TmpBoxSize = u32GridNum * u32GridNum * SVP_SAMPLE_YOLOV3_CHANNLENUM;//SVP_SAMPLE_YOLOV3_CHANNLENUM = 255
 
     HI_FLOAT* pf32InputData = (HI_FLOAT*)ps32ResultMem;
-    HI_FLOAT* pf32BoxTmp = (HI_FLOAT*)(pf32InputData + inputdate_size);////tep_box_size
-    SVP_SAMPLE_BOX_S* pstBox = (SVP_SAMPLE_BOX_S*)(pf32BoxTmp + u32TmpBoxSize);////assit_box_size
+    HI_FLOAT* pf32BoxTmp = (HI_FLOAT*)(pf32InputData + inputdate_size);//tep_box_size
+    SVP_SAMPLE_BOX_S* pstBox = (SVP_SAMPLE_BOX_S*)(pf32BoxTmp + u32TmpBoxSize);//assit_box_size
 
-    printf("n:%u, c:%u, h:%u, w:%u\n",
-        pstDstBlob->u32Num,
-        pstDstBlob->unShape.stWhc.u32Chn,
-        pstDstBlob->unShape.stWhc.u32Height,
-        pstDstBlob->unShape.stWhc.u32Width);
+    printf("n:%u, c:%u, h:%u, w:%u\n", pstDstBlob->u32Num,pstDstBlob->unShape.stWhc.u32Chn,pstDstBlob->unShape.stWhc.u32Height,pstDstBlob->unShape.stWhc.u32Width);
 
     if ((u32GridNum != pstDstBlob->unShape.stWhc.u32Height) ||
         (u32GridNum != pstDstBlob->unShape.stWhc.u32Width)  ||
@@ -100,9 +105,9 @@ void SvpSampleWkYoloV3GetResultForOneBlob(SVP_BLOB_S *pstDstBlob,
 
     {
         HI_U32 n = 0;
-        for (HI_U32 c = 0; c < SVP_SAMPLE_YOLOV3_CHANNLENUM; c++) {
-            for (HI_U32 h = 0; h < u32GridNum; h++) {
-                for (HI_U32 w = 0; w < u32GridNum; w++) {
+        for (HI_U32 c = 0; c < SVP_SAMPLE_YOLOV3_CHANNLENUM; c++) {//channel
+            for (HI_U32 h = 0; h < u32GridNum; h++) {//height
+                for (HI_U32 w = 0; w < u32GridNum; w++) {//weight
                     HI_S32* ps32Temp = (HI_S32*)(pu8InputData + c * u32OneCSize + h * pstDstBlob->u32Stride) + w;
                     pf32InputData[n++] = (HI_FLOAT)(*ps32Temp) / SVP_WK_QUANT_BASE;
                 }
@@ -111,23 +116,24 @@ void SvpSampleWkYoloV3GetResultForOneBlob(SVP_BLOB_S *pstDstBlob,
     }
     {
         HI_U32 n = 0;
-        for (HI_U32 h = 0; h < u32GridNum; h++) {
-            for (HI_U32 w = 0; w < u32GridNum; w++) {
-                for (HI_U32 c = 0; c < SVP_SAMPLE_YOLOV3_CHANNLENUM; c++) {
+        for (HI_U32 h = 0; h < u32GridNum; h++) {//height
+            for (HI_U32 w = 0; w < u32GridNum; w++) {//weight
+                for (HI_U32 c = 0; c < SVP_SAMPLE_YOLOV3_CHANNLENUM; c++) {//channel
                     pf32BoxTmp[n++] = pf32InputData[c * u32CStep + h * u32HStep + w];
                 }
             }
         }
     }
 
+    //对每个特征图来说，n->w*h
     for (HI_U32 n = 0; n < u32GridNum * u32GridNum; n++)
     {
         //Grid
         HI_U32 w = n % u32GridNum;
         HI_U32 h = n / u32GridNum;
-        for (HI_U32 k = 0; k < SVP_SAMPLE_YOLOV3_BOXNUM; k++)
+        for (HI_U32 k = 0; k < SVP_SAMPLE_YOLOV3_BOXNUM; k++)//SVP_SAMPLE_YOLOV3_BOXNUM = 3
         {
-            HI_U32 u32Index = (n * SVP_SAMPLE_YOLOV3_BOXNUM + k) * SVP_SAMPLE_YOLOV3_PARAMNUM;
+            HI_U32 u32Index = (n * SVP_SAMPLE_YOLOV3_BOXNUM + k) * SVP_SAMPLE_YOLOV3_PARAMNUM;//SVP_SAMPLE_YOLOV3_PARAMNUM = 85
             HI_FLOAT x = ((HI_FLOAT)w + Sigmoid(pf32BoxTmp[u32Index + 0])) / u32GridNum;
             HI_FLOAT y = ((HI_FLOAT)h + Sigmoid(pf32BoxTmp[u32Index + 1])) / u32GridNum;
             HI_FLOAT f32Width = (HI_FLOAT)(exp(pf32BoxTmp[u32Index + 2]) * s_SvpSampleYoloV3Bias[enScaleType][2 * k]) / SVP_SAMPLE_YOLOV3_SRC_WIDTH;
@@ -162,6 +168,8 @@ void SvpSampleWkYoloV3GetResultForOneBlob(SVP_BLOB_S *pstDstBlob,
 
 }
 
+
+//
 void SvpSampleWKYoloV3BoxPostProcess(SVP_SAMPLE_BOX_S* pstInputBbox, HI_U32 u32InputBboxNum,
     SVP_SAMPLE_BOX_S* pstResultBbox, HI_U32 *pu32BoxNum)
 {
@@ -214,37 +222,48 @@ void SvpSampleWKYoloV3BoxPostProcess(SVP_SAMPLE_BOX_S* pstInputBbox, HI_U32 u32I
 
 }
 
-// SvpSampleWkYoloV3GetResult(pstDetParam->astDst, pstDetParam->ps32ResultMem,
-// &stBoxesInfo, p32BoxNum, strResultFolderDir, imgNameRecoder);
+
+
+// 对yolov3的网络，获取结果
 void SvpSampleWkYoloV3GetResult(SVP_BLOB_S *pstDstBlob, HI_S32 *ps32ResultMem, SVP_SAMPLE_BOX_RESULT_INFO_S *pstResultBoxInfo,
     HI_U32 *pu32BoxNum, string& strResultFolderDir, vector<SVP_SAMPLE_FILE_NAME_PAIR>& imgNameRecoder)
-{
+{   
+    //bbox结构体指针
     SVP_SAMPLE_BOX_S* pstResultBbox = pstResultBoxInfo->pstBbox;
     HI_U32 u32ResultBoxNum = 0;
-    SVP_SAMPLE_BOX_RESULT_INFO_S stTempBoxResultInfo;
 
+    //为啥要给个Tmp的机制呢？直接输出结果不行么？
+    //缓存结果bbox信息？
+    SVP_SAMPLE_BOX_RESULT_INFO_S stTempBoxResultInfo;
+    //新申请的暂存的bbox结构体指针
     SVP_SAMPLE_BOX_S* pstTempBbox = NULL;
+    //暂存bbox数量的变量
     HI_U32 u32TempBoxNum = 0;
 
+    //pstDstBlob->u32Num = 3
     for (HI_U32 u32NumIndex = 0; u32NumIndex < pstDstBlob->u32Num; u32NumIndex++)
     {
+        //每个特征点会预测三个框，SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM=3
         SVP_SAMPLE_BOX_S* apstBox[SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM] = { NULL };
         HI_U32 au32BoxNum[SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM] = { 0 };
 
+        //强制类型转换？
         SVP_SAMPLE_RESULT_MEM_HEAD_S *pstHead = (SVP_SAMPLE_RESULT_MEM_HEAD_S *)ps32ResultMem;
 
+        //每个特征点的三个bbox，SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM = 3
         for (HI_U32 u32resBlobIdx = 0; u32resBlobIdx < SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM; u32resBlobIdx++)
         {
             SVP_BLOB_S* pstTempBlob = &pstDstBlob[u32resBlobIdx];
-            // pstTempBlob->u32Stride锟斤拷nnie锟斤拷锟斤拷锟絝eature锟斤拷每锟斤拷锟斤拷锟斤拷锟斤拷锟街斤拷锟斤拷锟斤拷
-            // u32OneCSize锟斤拷nnie锟斤拷锟斤拷锟絝eature锟斤拷每锟斤拷channel锟斤拷锟斤拷锟斤拷锟街斤拷锟斤拷
+            //onechannel = stride*height ; framestride = onechannel*channels;
             HI_U32 u32OneCSize = pstTempBlob->u32Stride * pstTempBlob->unShape.stWhc.u32Height;
             HI_U32 u32FrameStride = u32OneCSize * pstTempBlob->unShape.stWhc.u32Chn;
-            // 锟斤拷锟绞碉拷c锟斤拷通锟斤拷锟斤拷h锟叫碉拷w锟叫碉拷元锟斤拷
+            //当前帧(blob)的起始地址
             HI_U8* pu8InputData = (HI_U8*)pstTempBlob->u64VirAddr + u32NumIndex * u32FrameStride;
 
+            //如果head地址非空就开始处理
             if (HI_NULL != pstHead)
             {
+                //
                 SvpSampleWkYoloV3GetResultForOneBlob(pstTempBlob,
                     pu8InputData,
                     (SVP_SAMPLE_YOLOV3_SCALE_TYPE_E)pstHead->u32Type,
@@ -252,6 +271,7 @@ void SvpSampleWkYoloV3GetResult(SVP_BLOB_S *pstDstBlob, HI_S32 *ps32ResultMem, S
                     &apstBox[u32resBlobIdx], &au32BoxNum[u32resBlobIdx]);
             }
 
+            //如果u32resBlobIdx不是最后一个，那就更新head地址
             if (u32resBlobIdx < SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM - 1) {
                 pstHead = (SVP_SAMPLE_RESULT_MEM_HEAD_S*)((HI_U8 *)(pstHead + 1) + pstHead->u32Len);
             }

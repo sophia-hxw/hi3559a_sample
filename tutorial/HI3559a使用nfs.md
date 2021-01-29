@@ -8,7 +8,7 @@ sudo apt-get install nfs-kernel-server
 sudo mkdir /home/demo/hi3559a_share
 ```
 - 配置文件
-打开```/ets/exports```文件，在最后加上：
+打开```/etc/exports```文件，在最后加上：
 ```
 /home/demo/hi3559a_share *(rw,sync,no_subtree_check)
 ```

@@ -53,7 +53,7 @@ const HI_CHAR *g_paszModelName_d[] = {
 #endif
 
 
-//一次前传？
+//一次前传
 HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNIE_CFG_S *pstDetCfg)
 {
     HI_S32 s32Ret = HI_SUCCESS;
@@ -84,7 +84,8 @@ HI_S32 SvpSampleCnnDetectionForword(SVP_NNIE_ONE_SEG_DET_S *pstDetParam, SVP_NNI
     return s32Ret;
 }
 
-// s32Ret = SvpSampleDetOneSegGetResult(&stDetParam, netType, &stSSDParam, strResultFolderDir, imgNameRecoder);
+
+// 获取检测结果
 HI_S32 SvpSampleDetOneSegGetResult(SVP_NNIE_ONE_SEG_DET_S *pstDetParam,
     HI_U8 netType, HI_VOID *pExtraParam,
     string& strResultFolderDir, vector<SVP_SAMPLE_FILE_NAME_PAIR>& imgNameRecoder)
@@ -92,13 +93,14 @@ HI_S32 SvpSampleDetOneSegGetResult(SVP_NNIE_ONE_SEG_DET_S *pstDetParam,
     HI_S32 s32Ret = HI_SUCCESS;
     SVP_SAMPLE_BOX_S astBoxesResult[1024] = { 0 };
 
+    //pstDetParam->astSrc->u32Num是NCHW中的N，每一个图片一个BoxNum指针？
     HI_U32* p32BoxNum = (HI_U32*)malloc(pstDetParam->astSrc->u32Num * sizeof(HI_U32));
     CHECK_EXP_RET(p32BoxNum == NULL, HI_FAILURE, "malloc p32BoxNum failure!");
-    //  复制字符0 到参数 p32BoxNum 所指向的字符串的前 pstDetParam->astSrc->u32Num * sizeof(HI_U32) 个字符。
     memset(p32BoxNum, 0, pstDetParam->astSrc->u32Num * sizeof(HI_U32));
 
+    //bbox结构体信息，bbox具体信息结构体指针，bbox的宽和高
     SVP_SAMPLE_BOX_RESULT_INFO_S stBoxesInfo = { 0 };
-    stBoxesInfo.pstBbox = astBoxesResult;
+    stBoxesInfo.pstBbox = astBoxesResult;//结果bbox结构体指针
     stBoxesInfo.u32OriImHeight = pstDetParam->astSrc[0].unShape.stWhc.u32Height;
     stBoxesInfo.u32OriImWidth = pstDetParam->astSrc[0].unShape.stWhc.u32Width;
 
@@ -167,6 +169,8 @@ HI_S32 SvpSampleDetOneSegGetResult(SVP_NNIE_ONE_SEG_DET_S *pstDetParam,
     return s32Ret;
 }
 
+
+//结果内存大小
 static HI_U32 s_SvpSampleDetOneSegGetResultMemSize(HI_U8 netType, void *pstParam)
 {
     HI_U32 u32ResultMemSize = 0;
@@ -205,15 +209,19 @@ static HI_U32 s_SvpSampleDetOneSegGetResultMemSize(HI_U8 netType, void *pstParam
     return u32ResultMemSize;
 }
 
+
+//结果内存
 static HI_S32* s_SvpSampleDetOneSegGetResultMem(HI_U8 netType, SVP_NNIE_SSD_S *pstSSDParam)
 {
     HI_S32 *ps32Mem = HI_NULL;
     HI_U32 u32ResultMemSize = 0;
 
+    //yolov1
     if (SVP_SAMPLE_WK_DETECT_NET_YOLOV1 == netType)
     {
         // yolo v1 not use assis mem, return directly.
     }
+    //yolov3
     else if (SVP_SAMPLE_WK_DETECT_NET_YOLOV3 == netType)
     {
         // yolo v3 special mem init method
@@ -304,11 +312,11 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
     /* 3. init resources */
     /* mkdir to save result, name folder by model type */
     // 网络参数名称
-    string strNetType = g_paszModelType_d[netType];;
+    string strNetType = g_paszModelType_d[netType];//"SVP_SAMPLE_YOLO_V3"
     string strResultFolderDir = "result_" + strNetType + "/";
     s32Ret = SvpSampleMkdir(strResultFolderDir.c_str());
     CHECK_EXP_RET(HI_SUCCESS != s32Ret, s32Ret, "SvpSampleMkdir(%s) failed", strResultFolderDir.c_str());
-    stDetCfg.pszModelName = pszModelName;//const HI_CHAR *pszModelName;
+    stDetCfg.pszModelName = pszModelName;//带路径的模型名称
 
     //把paszPicList拷贝到&stDetCfg.paszPicList
     // void	*memcpy(void *__dst, const void *__src, size_t __n) 如果dst存在数据，将会被覆盖
@@ -323,22 +331,20 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
 
     /*****************memory needed by post-process of get detection result ****************/
     SVP_NNIE_SSD_S stSSDParam = { 0 };
+    //ssd网络才有的操作
     if (SVP_SAMPLE_WK_DETECT_NET_SSD == netType) {
         SvpSampleWkSSDGetParm(&stSSDParam, &stDetParam);
     }
 
-    // Yolo V1 will not use resultMem
+    // Yolo V1 will not use resultMem，除了yolov1之外的其他网络的操作
     if (SVP_SAMPLE_WK_DETECT_NET_YOLOV1 != netType) {
         stDetParam.ps32ResultMem =
-        		s_SvpSampleDetOneSegGetResultMem(
-        				netType,
-        				&stSSDParam
-						);
+        		s_SvpSampleDetOneSegGetResultMem(netType,&stSSDParam);
         CHECK_EXP_GOTO(!stDetParam.ps32ResultMem, Fail, "Error: Malloc ps32ResultMem failed!");
     }
 
 
-    // calc batch loop count
+    // calc batch loop count，对所有的图片按batch分批
     u32Batch = SVP_SAMPLE_MIN(stDetCfg.u32MaxInputNum, stDetParam.u32TotalImgNum);
     u32Batch = SVP_SAMPLE_MIN(u32Batch, stDetParam.astSrc[0].u32Num);
     CHECK_EXP_GOTO(0 == u32Batch, Fail,
@@ -349,6 +355,7 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
 
     /**************************************************************************/
     /* 4. run forward and detection */
+    //一共跑u32LoopCnt个batch
     for (HI_U32 i = 0; i < u32LoopCnt; i++)
     {
         /* init vector mem with size u32Batch */
@@ -369,6 +376,7 @@ HI_S32 SvpSampleCnnDetectionOneSeg(
         u32StartId += u32Batch;
     }
 
+    //剩下不足一个batch的再跑一个batch
     u32Batch = stDetParam.u32TotalImgNum - u32StartId;
     if (u32Batch > 0)
     {
@@ -427,11 +435,12 @@ void SvpSampleCnnDetYoloV3()
 {
     printf("%s start ...\n", __FUNCTION__);
     HI_U8 net_name = SVP_SAMPLE_WK_DETECT_NET_YOLOV3
+    //SVP_SAMPLE_WK_DETECT_NET_YOLOV3   =  0x2,  /*Yolov3*/
     SvpSampleCnnDetectionOneSeg(
         // 模型名字与路径
-        // g_paszModelName_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
+        // g_paszModelName_d[net_name] = "../../data/detection/yolov3/inst/inst_yolov3_inst.wk"
         // 图片路径
-        // g_paszPicList_d[SVP_SAMPLE_WK_DETECT_NET_YOLOV3],
+        // g_paszPicList_d[net_name] = "../../data/detection/yolov3/image_test_list.txt"
 
         // SVP_SAMPLE_WK_DETECT_NET_YOLOV3
         g_paszModelName_d[net_name], g_paszPicList_d[net_name], net_name);
