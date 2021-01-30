@@ -46,24 +46,37 @@ void SvpSampleWkYoloV2GetResult(SVP_BLOB_S *pstDstBlob, HI_S32 *ps32ResultMem,
     std::vector<SVP_SAMPLE_FILE_NAME_PAIR>& imgNameRecoder);
 
 /* YOLO V3 */
-#define SVP_SAMPLE_YOLOV3_SRC_WIDTH                (416)
-#define SVP_SAMPLE_YOLOV3_SRC_HEIGHT               (416)
+// #define SVP_SAMPLE_YOLOV3_SRC_WIDTH                (416)
+// #define SVP_SAMPLE_YOLOV3_SRC_HEIGHT               (416)
 
-#define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_82          (13)
-#define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_94          (26)
-#define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106         (52)
-#define SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM          (3) //3个先验框
-#define SVP_SAMPLE_YOLOV3_CHANNLENUM               (255)
-#define SVP_SAMPLE_YOLOV3_PARAMNUM                 (85)//？
-#define SVP_SAMPLE_YOLOV3_BOXNUM                   (3)
-#define SVP_SAMPLE_YOLOV3_CLASSNUM                 (80)
+// #define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_82          (13)
+// #define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_94          (26)
+// #define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106         (52)
+// #define SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM          (3) //3个先验框
+// #define SVP_SAMPLE_YOLOV3_CHANNLENUM               (255)
+// #define SVP_SAMPLE_YOLOV3_PARAMNUM                 (85)//？
+// #define SVP_SAMPLE_YOLOV3_BOXNUM                   (3)
+// #define SVP_SAMPLE_YOLOV3_CLASSNUM                 (80)
+// #define SVP_SAMPLE_YOLOV3_MAX_BOX_NUM              (10)
+
+/* YOLO V4 */
+#define SVP_SAMPLE_YOLOV3_SRC_WIDTH                (608)
+#define SVP_SAMPLE_YOLOV3_SRC_HEIGHT               (608)
+
+#define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_82          (76)
+#define SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_94          (38)
+#define SVP_SAMPLE_YOLOV3_RESULT_BLOB_NUM          (2) //3个先验框
+#define SVP_SAMPLE_YOLOV3_CHANNLENUM               (60)
+#define SVP_SAMPLE_YOLOV3_PARAMNUM                 (15)//？
+#define SVP_SAMPLE_YOLOV3_BOXNUM                   (4)
+#define SVP_SAMPLE_YOLOV3_CLASSNUM                 (10)
 #define SVP_SAMPLE_YOLOV3_MAX_BOX_NUM              (10)
 
 typedef enum hiSVP_SAMPLE_YOLOV3_SCALE_TYPE
 {
     CONV_82 = 0,
     CONV_94,
-    CONV_106,
+   // CONV_106,
     SVP_SAMPLE_YOLOV3_SCALE_TYPE_MAX
 }SVP_SAMPLE_YOLOV3_SCALE_TYPE_E;
 

@@ -11,10 +11,9 @@
 #define SVP_SAMPLE_YOLOV3_SCORE_FILTER_THREASH     (0.5f)
 #define SVP_SAMPLE_YOLOV3_NMS_THREASH              (0.45f)
 
-static HI_DOUBLE s_SvpSampleYoloV3Bias[SVP_SAMPLE_YOLOV3_SCALE_TYPE_MAX][6] = {
-    {116,90, 156,198, 373,326},
-    {30,61, 62,45, 59,119},
-    {10,13, 16,30, 33,23}
+static HI_DOUBLE s_SvpSampleYoloV3Bias[SVP_SAMPLE_YOLOV3_SCALE_TYPE_MAX][8] = {
+    {4,8,7,18,15,13,13,31},
+	{28,24,24,55,50,50,74,102}
 };
 
 //三个输出层，每个层的大小在头文件中定义
@@ -28,9 +27,9 @@ HI_U32 SvpSampleWkYoloV3GetGridNum(SVP_SAMPLE_YOLOV3_SCALE_TYPE_E enScaleType)
     case CONV_94:
         return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_94;
         break;
-    case CONV_106:
-        return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106;
-        break;
+    // case CONV_106:
+    //     return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106;
+    //     break;
     default:
         return 0;
     }
@@ -44,9 +43,9 @@ HI_U32 SvpSampleWkYoloV3GetBoxTotleNum(SVP_SAMPLE_YOLOV3_SCALE_TYPE_E enScaleTyp
         return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_82 * SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_82 * SVP_SAMPLE_YOLOV3_BOXNUM;
     case CONV_94:
         return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_94 * SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_94 * SVP_SAMPLE_YOLOV3_BOXNUM;
-    case CONV_106:
-        return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106 * SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106 * SVP_SAMPLE_YOLOV3_BOXNUM;
-    default:
+    // case CONV_106:
+    //     return SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106 * SVP_SAMPLE_YOLOV3_GRIDNUM_CONV_106 * SVP_SAMPLE_YOLOV3_BOXNUM;
+    // default:
         return 0;
     }
 }
@@ -179,8 +178,8 @@ void SvpSampleWKYoloV3BoxPostProcess(SVP_SAMPLE_BOX_S* pstInputBbox, HI_U32 u32I
     HI_U32 u32SrcHeight = SVP_SAMPLE_YOLOV3_SRC_HEIGHT;
 
     HI_U32 u32AssistStackNum = SvpSampleWkYoloV3GetBoxTotleNum(CONV_82)
-                               + SvpSampleWkYoloV3GetBoxTotleNum(CONV_94)
-                               + SvpSampleWkYoloV3GetBoxTotleNum(CONV_106);
+                               + SvpSampleWkYoloV3GetBoxTotleNum(CONV_94);
+                              // + SvpSampleWkYoloV3GetBoxTotleNum(CONV_106);
 
     HI_U32 u32AssistStackSize = u32AssistStackNum * sizeof(SVP_SAMPLE_STACK_S);
 

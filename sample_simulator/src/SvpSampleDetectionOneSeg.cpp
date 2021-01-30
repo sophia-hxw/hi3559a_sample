@@ -232,7 +232,7 @@ static HI_S32* s_SvpSampleDetOneSegGetResultMem(HI_U8 netType, SVP_NNIE_SSD_S *p
         SVP_SAMPLE_RESULT_MEM_HEAD_S *pstHead = { 0 };
         u32ResultMemSize1 = SvpSampleGetYolov3ResultMemSize(CONV_82);
         u32ResultMemSize2 = SvpSampleGetYolov3ResultMemSize(CONV_94);
-        u32ResultMemSize3 = SvpSampleGetYolov3ResultMemSize(CONV_106);
+        //u32ResultMemSize3 = SvpSampleGetYolov3ResultMemSize(CONV_106);
         if (0 != (u32ResultMemSize1 + u32ResultMemSize2 + u32ResultMemSize3))
         {
             u32ResultMemSize = u32ResultMemSize1 + u32ResultMemSize2 + u32ResultMemSize3 + sizeof(SVP_SAMPLE_RESULT_MEM_HEAD_S) * 3;
@@ -249,9 +249,9 @@ static HI_S32* s_SvpSampleDetOneSegGetResultMem(HI_U8 netType, SVP_NNIE_SSD_S *p
                 pstHead->u32Type = CONV_94;
                 pstHead->u32Len = u32ResultMemSize2;
 
-                pstHead = (SVP_SAMPLE_RESULT_MEM_HEAD_S *)(((HI_U8 *)pstHead) + sizeof(SVP_SAMPLE_RESULT_MEM_HEAD_S) + u32ResultMemSize2);
-                pstHead->u32Type = CONV_106;
-                pstHead->u32Len = u32ResultMemSize3;
+                // pstHead = (SVP_SAMPLE_RESULT_MEM_HEAD_S *)(((HI_U8 *)pstHead) + sizeof(SVP_SAMPLE_RESULT_MEM_HEAD_S) + u32ResultMemSize2);
+                // pstHead->u32Type = CONV_106;
+                // pstHead->u32Len = u32ResultMemSize3;
             }
         }
     }
